@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cart {
-   // hiii
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartId;
