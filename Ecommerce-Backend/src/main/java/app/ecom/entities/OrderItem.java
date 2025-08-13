@@ -12,23 +12,19 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderItemId;
+    private int id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = false)
-    private Seller seller;
+    @Column(nullable = false)
+    private int quantity;
 
     @Column(nullable = false)
-    private int orderItemsQuantity = 1;
-
-    @Column(nullable = false)
-    private double orderItemsPrice;
+    private double price; // price per unit at purchase time
 }

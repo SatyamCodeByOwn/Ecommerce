@@ -2,7 +2,6 @@ package app.ecom.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +13,7 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int reviewId;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -36,4 +35,9 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "seller_id")
     private Seller seller;
+
+    @PrePersist
+    protected void onCreate() {
+        this.submissionDate = LocalDate.now();
+    }
 }

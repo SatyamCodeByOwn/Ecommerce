@@ -1,6 +1,7 @@
 package app.ecom.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -12,24 +13,37 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private int id;
 
-    @Column(length = 30, nullable = false, unique = true)
-    private String userName;
+    @NotBlank
+    @Size(max = 30)
+    @Column(name = "username", length = 30, nullable = false, unique = true)
+    private String username;
 
-    @Column(length = 30, nullable = false, unique = true)
-    private String userEmail;
+    @NotBlank
+    @Email
+    @Size(max = 30)
+    @Column(name = "email", length = 30, nullable = false, unique = true)
+    private String email;
 
-    @Column(length = 10, nullable = false)
-    private String userPasswordSalt;
+    @NotBlank
+    @Size(max = 10)
+    @Column(name = "password_salt", length = 10, nullable = false)
+    @ToString.Exclude
+    private String passwordSalt;
 
-    @Column(length = 64, nullable = false)
-    private String userPasswordHash;
+    @NotBlank
+    @Size(max = 64)
+    @Column(name = "password_hash", length = 64, nullable = false)
+    @ToString.Exclude
+    private String passwordHash;
 
-    @Column(length = 20, nullable = false, unique = true)
-    private String userPhoneNumber;
+    @NotBlank
+    @Size(max = 20)
+    @Column(name = "phone_number", length = 20, nullable = false, unique = true)
+    private String phoneNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 }
