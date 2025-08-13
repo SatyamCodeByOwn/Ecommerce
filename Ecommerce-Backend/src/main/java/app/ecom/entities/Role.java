@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,11 +12,11 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int roleId;
+    private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
-    private RoleName roleName;
+    @Column(nullable = false, unique = true, length = 20)
+    private RoleName name;
 
     public enum RoleName {
         OWNER,

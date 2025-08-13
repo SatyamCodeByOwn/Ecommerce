@@ -15,7 +15,7 @@ public class Categories {
     private int categoryId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private CategoryName categoryName;
 
     public enum CategoryName {
