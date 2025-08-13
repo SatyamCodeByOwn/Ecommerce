@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {
-
+    // my self manish kumar
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartItemId;
