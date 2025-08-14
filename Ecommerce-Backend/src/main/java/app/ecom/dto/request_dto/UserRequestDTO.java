@@ -8,27 +8,27 @@ import lombok.*;
 @AllArgsConstructor
 public class UserRequestDTO {
 
-    @NotBlank
-    @Size(max = 30)
+    @NotBlank(message = "Username is required")
+    @Size(max = 30, message = "Username must not exceed 30 characters")
     private String username;
 
-    @NotBlank
-    @Email
-    @Size(max = 30)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Size(max = 30, message = "Email must not exceed 30 characters")
     private String email;
 
-    @NotBlank
-    @Size(max = 10)
+    @NotBlank(message = "Password salt is required")
+    @Size(max = 10, message = "Password salt must not exceed 10 characters")
     private String passwordSalt;
 
-    @NotBlank
-    @Size(max = 64)
+    @NotBlank(message = "Password hash is required")
+    @Size(max = 64, message = "Password hash must not exceed 64 characters")
     private String passwordHash;
 
-    @NotBlank
-    @Size(max = 20)
+    @NotBlank(message = "Phone number is required")
+    @Size(max = 20, message = "Phone number must not exceed 20 characters")
     private String phoneNumber;
 
-    @NotBlank
+    @NotBlank(message = "Role name is required")
     private String roleName; // Instead of roleId
 }
