@@ -7,7 +7,7 @@ import app.ecom.entities.User;
 
 public class UserMapper {
 
-    // Convert UserRequestDTO → User (Entity)
+
     public static User toEntity(UserRequestDTO dto, Role role) {
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -19,7 +19,7 @@ public class UserMapper {
         return user;
     }
 
-    // Convert User → UserResponseDTO
+
     public static UserResponseDTO toResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
