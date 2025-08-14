@@ -9,20 +9,47 @@ public class Utils {
 
     // Generate random salt
     public static String generateSalt() {
-        byte[] salt = new byte[16];
-        new SecureRandom().nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
+
+        final int SALT_LENGTH = 10;
+
+        String saltChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        StringBuilder strSalt = new StringBuilder(SALT_LENGTH);
+
+        SecureRandom random = new SecureRandom();
+
+        for (int i = 0; i < SALT_LENGTH; i++) {
+
+            int randomIndex = random.nextInt(saltChars.length());
+
+            strSalt.append(saltChars.charAt(randomIndex));
+
+        }
+
+        return strSalt.toString();
     }
 
-    // Hash password with salt using SHA-256
-    public static String hashPassword(String password, String salt) {
+    public static String generateHash(String inputString) {
+        String strHash = "";
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(Base64.getDecoder().decode(salt)); // Add salt
-            byte[] hashedPassword = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hashedPassword);
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = messageDigest.digest(inputString.getBytes());
+            strHash = bytesToHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
+            e.printStackTrace();
         }
+        return strHash;
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2 * bytes.length);
+        for (byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append("0");
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }
