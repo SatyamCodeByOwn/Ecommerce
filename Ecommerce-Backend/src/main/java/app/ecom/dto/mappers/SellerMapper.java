@@ -8,15 +8,15 @@ import app.ecom.entities.User;
 public class SellerMapper {
 
     // Convert SellerRequestDTO → Seller Entity
-    public static Seller toEntity(SellerRequestDTO dto, User user) {
-        Seller seller = new Seller();
-        seller.setUser(user);
-        seller.setStoreName(dto.getStoreName());
-        seller.setGstNumber(dto.getGstNumber());
-        seller.setPanCard(dto.getPanCard());
-        seller.setApprovalStatus(Seller.ApprovalStatus.PENDING); // default
-        return seller;
-    }
+//    public static Seller toEntity(SellerRequestDTO dto, User user) {
+//        Seller seller = new Seller();
+//        seller.setUser(user);
+//        seller.setStoreName(dto.getStoreName());
+//        seller.setGstNumber(dto.getGstNumber());
+//        seller.setPanCard(dto.getPanCard());
+//        seller.setApprovalStatus(Seller.ApprovalStatus.PENDING); // default
+//        return seller;
+//    }
 
     // Convert Seller Entity → SellerResponseDTO
     public static SellerResponseDTO toDTO(Seller seller) {

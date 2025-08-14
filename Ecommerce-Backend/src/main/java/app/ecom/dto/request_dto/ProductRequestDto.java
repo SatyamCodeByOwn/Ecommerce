@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -31,6 +32,6 @@ public class ProductRequestDto {
     @NotNull(message = "Category ID cannot be null")
     private Integer categoryId;
 
-    @Size(max = 255, message = "Image path cannot exceed 255 characters")
-    private String imagePath; // This could be a URL or a file path
+    @NotNull(message = "Product image file is required")
+    private MultipartFile imagePath;
 }
