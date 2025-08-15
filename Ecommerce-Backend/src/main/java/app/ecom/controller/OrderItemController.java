@@ -2,10 +2,11 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.OrderItemRequestDto;
 import app.ecom.dto.response_dto.OrderItemResponseDto;
-import app.ecom.service.OrderItemService; // You will need to create this service
+import app.ecom.services.OrderItemService; // You will need to create this service
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ import java.util.List;
 @RequestMapping("/api") // Using a common base path
 @RequiredArgsConstructor
 public class OrderItemController {
-
-    private final OrderItemService orderItemService;
+    @Autowired
+    private  OrderItemService orderItemService;
 
     /**
      * Adds a new item to an existing order.

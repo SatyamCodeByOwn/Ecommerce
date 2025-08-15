@@ -27,7 +27,7 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(max = 10)
+    @Size(max = 60)
     @Column(name = "password_salt", length = 10, nullable = false)
     @ToString.Exclude
     private String passwordSalt;

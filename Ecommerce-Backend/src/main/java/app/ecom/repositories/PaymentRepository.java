@@ -1,7 +1,11 @@
 package app.ecom.repositories;
 
+import app.ecom.entities.Payment;
 import app.ecom.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Role, Integer> {
+import java.util.List;
+
+public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+    List<Payment> findByOrder_Id(int orderId);
 }

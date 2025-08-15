@@ -2,9 +2,10 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.UserRequestDTO;
 import app.ecom.dto.response_dto.UserResponseDTO;
-import app.ecom.service.UserService; // You will need to create this service
+import app.ecom.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
-    private final UserService userService; // Inject your user service
+    @Autowired
+    private UserService userService; // Inject your user service
 
     /**
      * Endpoint for registering a new user.
@@ -48,9 +49,5 @@ public class UserController {
      *
      * @return A ResponseEntity containing a list of all UserResponseDTOs.
      */
-    @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
+
 }

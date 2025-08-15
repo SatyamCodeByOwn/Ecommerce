@@ -2,7 +2,7 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.PaymentRequestDto;
 import app.ecom.dto.response_dto.PaymentResponseDto;
-import app.ecom.service.PaymentService; // You will need to create this service
+import app.ecom.services.PaymentService; // You will need to create this service
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
