@@ -43,8 +43,8 @@ public class UserService {
 
         // Generate salt & hash
         String salt = Utils.generateSalt();
-        String hash = Utils.hashPassword(dto.getPassword(), salt);
-
+        String newPassword = salt + dto.getPassword();
+        String hash = Utils.generateHash(newPassword);
 
         // Convert DTO → Entity
         User user = UserMapper.toEntity(dto, role, salt, hash);
