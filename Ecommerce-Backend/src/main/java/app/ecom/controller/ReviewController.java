@@ -2,7 +2,7 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.ReviewRequestDto;
 import app.ecom.dto.response_dto.ReviewResponseDto;
-import app.ecom.service.ReviewService; // You will need to create this service
+import app.ecom.services.ReviewService; // You will need to create this service
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
