@@ -2,9 +2,10 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.OrderRequestDTO;
 import app.ecom.dto.response_dto.OrderResponseDTO;
-import app.ecom.service.OrderService; // You will need to create this service
+import app.ecom.services.OrderService; // You will need to create this service
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
-
-    private final OrderService orderService; // Inject your order service
+    @Autowired
+    private  OrderService orderService; // Inject your order service
 
     /**
      * Endpoint to create a new order.

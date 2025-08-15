@@ -34,6 +34,7 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Categories category;
 
-    @Lob
-    private byte[] imagePath;
+//    @Lob
+//
+//    private byte[] imagePath;
 }
