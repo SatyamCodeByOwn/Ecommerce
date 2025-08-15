@@ -34,6 +34,6 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Categories category;
 
-    @Column(length = 255)
-    private String imagePath; // Storing path instead of large binary
+    @Lob
+    private byte[] imagePath;
 }

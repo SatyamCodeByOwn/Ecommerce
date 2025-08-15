@@ -8,12 +8,12 @@ import app.ecom.entities.User;
 public class UserMapper {
 
 
-    public static User toEntity(UserRequestDTO dto, Role role) {
+    public static User toEntity(UserRequestDTO dto, Role role, String hash, String salt) {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPasswordSalt(dto.getPasswordSalt());
-        user.setPasswordHash(dto.getPasswordHash());
+        user.setPasswordHash(hash);
+        user.setPasswordSalt(salt);
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole(role);
         return user;

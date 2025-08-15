@@ -2,6 +2,7 @@ package app.ecom.dto.request_dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,6 @@ public class SellerRequestDTO {
     private String gstNumber;
 
     @NotNull(message = "PAN card file is required")
-    @Size(min = 1, message = "PAN card file cannot be empty")
-    private byte[] panCard;
+    private MultipartFile panCard;
+
 }
