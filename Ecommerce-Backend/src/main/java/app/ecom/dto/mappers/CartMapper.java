@@ -4,10 +4,13 @@ import app.ecom.dto.response_dto.CartResponseDTO;
 import app.ecom.dto.response_dto.CartItemResponseDTO;
 import app.ecom.entities.Cart;
 
+
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 public class CartMapper {
+
 
     public static CartResponseDTO toResponseDTO(Cart cart) {
         List<CartItemResponseDTO> items = cart.getCartItems().stream()
@@ -16,7 +19,10 @@ public class CartMapper {
 
         double totalPrice = items.stream()
                 .mapToDouble(item -> item.getProductPrice() * item.getQuantity())
+
                 .sum();
+        
+
 
         return CartResponseDTO.builder()
                 .cartId(cart.getId())
@@ -25,5 +31,7 @@ public class CartMapper {
                 .items(items)
                 .totalPrice(totalPrice)
                 .build();
+
+       
     }
 }

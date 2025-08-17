@@ -18,13 +18,6 @@ public class OrderItemController {
     @Autowired
     private OrderItemService orderItemService;
 
-    /**
-     * Adds a new item to an existing or new PENDING order for a user.
-     *
-     * @param userId The ID of the user.
-     * @param orderItemRequestDto The DTO containing the product ID and quantity.
-     * @return A ResponseEntity with the created OrderItemResponseDto and HTTP status 201 (Created).
-     */
     @PostMapping("/orders/users/{userId}/items")
     public ResponseEntity<OrderItemResponseDto> addItemToOrder(
             @PathVariable int userId,
@@ -33,25 +26,12 @@ public class OrderItemController {
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
 
-    /**
-     * Retrieves all items associated with a specific order.
-     *
-     * @param orderId The ID of the order.
-     * @return A ResponseEntity containing a list of OrderItemResponseDto.
-     */
     @GetMapping("/orders/{orderId}/items")
     public ResponseEntity<List<OrderItemResponseDto>> getItemsByOrderId(@PathVariable int orderId) {
         List<OrderItemResponseDto> items = orderItemService.getItemsByOrderId(orderId);
         return ResponseEntity.ok(items);
     }
 
-    /**
-     * Updates the quantity of a specific item in an order.
-     *
-     * @param itemId   The ID of the order item to update.
-     * @param quantity The new quantity.
-     * @return A ResponseEntity containing the updated OrderItemResponseDto.
-     */
     @PutMapping("/order-items/{itemId}")
     public ResponseEntity<OrderItemResponseDto> updateOrderItemQuantity(
             @PathVariable int itemId,
@@ -60,12 +40,6 @@ public class OrderItemController {
         return ResponseEntity.ok(updatedItem);
     }
 
-    /**
-     * Removes a specific item from an order.
-     *
-     * @param itemId The ID of the order item to remove.
-     * @return A ResponseEntity with HTTP status 204 (No Content).
-     */
     @DeleteMapping("/order-items/{itemId}")
     public ResponseEntity<Void> removeOrderItem(@PathVariable int itemId) {
         orderItemService.removeOrderItem(itemId);

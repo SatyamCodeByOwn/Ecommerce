@@ -1,4 +1,4 @@
-package app.ecom.controllers;
+package app.ecom.controller;
 
 import app.ecom.dto.request_dto.ReviewRequestDTO;
 import app.ecom.dto.response_dto.ReviewResponseDTO;

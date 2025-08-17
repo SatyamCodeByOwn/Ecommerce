@@ -11,15 +11,10 @@ import java.util.stream.Collectors;
 
 public class OrderMapper {
 
-    public static Order toEntity(OrderRequestDTO dto, User user,
-                                 java.util.List<OrderItem> orderItems,
-                                 ShippingAddress shippingAddress) {
+    // Simplified toEntity. The service layer handles setting other fields.
+    public static Order toEntity(OrderRequestDTO dto, User user, ShippingAddress shippingAddress) {
         Order order = new Order();
         order.setUser(user);
-        order.setOrderItems(orderItems);
-        order.setStatus(Order.OrderStatus.valueOf(dto.getStatus().toUpperCase()));
-        order.setTotalAmount(dto.getTotalAmount());
-        order.setOrderDate(dto.getOrderDate());
         order.setShippingAddress(shippingAddress);
         return order;
     }

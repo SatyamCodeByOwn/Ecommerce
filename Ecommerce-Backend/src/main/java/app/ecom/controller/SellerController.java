@@ -3,6 +3,7 @@ package app.ecom.controller;
 import app.ecom.dto.request_dto.SellerRequestDTO;
 import app.ecom.dto.response_dto.SellerResponseDTO;
 import app.ecom.services.SellerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping("/api/sellers")
 public class SellerController {

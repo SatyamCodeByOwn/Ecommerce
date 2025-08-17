@@ -1,12 +1,16 @@
 package app.ecom.dto.response_dto;
 
+
 import lombok.*;
+
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CartItemResponseDTO {
+
     private int id;          // cart item id
     private int productId;   // product id
     private String productName;
@@ -14,3 +18,4 @@ public class CartItemResponseDTO {
     private double productPrice;
     private int quantity;
 }
+

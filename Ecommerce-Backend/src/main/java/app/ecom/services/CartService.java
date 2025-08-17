@@ -1,22 +1,29 @@
 package app.ecom.services;
 
+
+
 import app.ecom.dto.request_dto.CartItemRequestDTO;
 import app.ecom.dto.response_dto.CartResponseDTO;
 import app.ecom.entities.Cart;
 import app.ecom.entities.CartItem;
 import app.ecom.entities.Product;
 import app.ecom.entities.User;
+
 import app.ecom.exceptions.ResourceNotFoundException;
 import app.ecom.dto.mappers.CartMapper;
+
 import app.ecom.repositories.CartItemRepository;
 import app.ecom.repositories.CartRepository;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.UserRepository;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+
 @Transactional
 public class CartService {
 
@@ -34,10 +41,11 @@ public class CartService {
 
     // ✅ Get or create cart for a user
     public CartResponseDTO getOrCreateCart(int userId) {
+
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                            .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
                     Cart newCart = new Cart();
                     newCart.setUser(user);
                     return cartRepository.save(newCart);
@@ -52,7 +60,8 @@ public class CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + dto.getProductId()));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + dto.getProductId()));
+
 
         // check if item already exists in cart
         CartItem cartItem = cart.getCartItems().stream()
@@ -61,8 +70,11 @@ public class CartService {
                 .orElse(null);
 
         if (cartItem != null) {
+
             cartItem.setQuantity(cartItem.getQuantity() + dto.getQuantity());
+            cartItemRepository.save(cartItem);
         } else {
+
             cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProduct(product);
@@ -108,6 +120,7 @@ public class CartService {
         cart.getCartItems().remove(cartItem);
         cartItemRepository.delete(cartItem);
 
+
         cartRepository.save(cart);
         return CartMapper.toResponseDTO(cart);
     }
@@ -122,5 +135,7 @@ public class CartService {
 
         cartRepository.save(cart);
         return CartMapper.toResponseDTO(cart);
+
+
     }
 }

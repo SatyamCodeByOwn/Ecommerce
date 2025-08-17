@@ -20,7 +20,9 @@ public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @EqualsAndHashCode.Include // ✅ equality based only on ID
+
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +36,7 @@ public class CartItem {
     @Column(nullable = false)
     private int quantity = 1;
 
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime dateAdded;
 
@@ -43,3 +46,4 @@ public class CartItem {
         this.dateAdded = LocalDateTime.now();
     }
 }
+
