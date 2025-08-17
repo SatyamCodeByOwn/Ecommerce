@@ -1,7 +1,11 @@
 package app.ecom.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "wishlist_items")
@@ -21,4 +25,12 @@ public class WishlistItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @Column(nullable = false)
+    private LocalDateTime dateAdded;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dateAdded = LocalDateTime.now();
+    }
 }

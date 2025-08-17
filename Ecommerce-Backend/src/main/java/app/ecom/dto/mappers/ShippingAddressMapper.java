@@ -7,7 +7,6 @@ import app.ecom.entities.User;
 
 public class ShippingAddressMapper {
 
-    // Convert Request DTO → Entity
     public static ShippingAddress toEntity(ShippingAddressRequestDTO dto, User user) {
         ShippingAddress address = new ShippingAddress();
         address.setUser(user);
@@ -21,7 +20,6 @@ public class ShippingAddressMapper {
         return address;
     }
 
-    // Convert Entity → Response DTO
     public static ShippingAddressResponseDTO toDTO(ShippingAddress address) {
         return new ShippingAddressResponseDTO(
                 address.getId(),
@@ -34,5 +32,16 @@ public class ShippingAddressMapper {
                 address.getCountry(),
                 address.getPhoneNumber()
         );
+    }
+
+    public static void updateEntity(ShippingAddress address, ShippingAddressRequestDTO dto, User user) {
+        address.setUser(user);
+        address.setFullName(dto.getFullName());
+        address.setAddressLine(dto.getAddressLine());
+        address.setCity(dto.getCity());
+        address.setState(dto.getState());
+        address.setPostalCode(dto.getPostalCode());
+        address.setCountry(dto.getCountry());
+        address.setPhoneNumber(dto.getPhoneNumber());
     }
 }

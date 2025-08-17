@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse<T> {
-    private int status;     // HTTP status code
-    private String message; // Custom message
-    private T data;         // Generic data type for flexibility
+    private int status;
+    private String message;
+    private T data;
 }

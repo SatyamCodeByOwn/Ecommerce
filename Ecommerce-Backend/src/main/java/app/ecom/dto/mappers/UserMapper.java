@@ -7,18 +7,15 @@ import app.ecom.entities.User;
 
 public class UserMapper {
 
-
-    public static User toEntity(UserRequestDTO dto, Role role, String hash, String salt) {
+    public static User toEntity(UserRequestDTO dto, Role role, String passwordHash) {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPasswordHash(hash);
-        user.setPasswordSalt(salt);
+        user.setPasswordHash(passwordHash);
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole(role);
         return user;
     }
-
 
     public static UserResponseDTO toResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
@@ -28,5 +25,13 @@ public class UserMapper {
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setRoleName(user.getRole().getName().name());
         return dto;
+    }
+
+    public static void updateEntity(User user, UserRequestDTO dto, Role role, String passwordHash) {
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPasswordHash(passwordHash);
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setRole(role);
     }
 }

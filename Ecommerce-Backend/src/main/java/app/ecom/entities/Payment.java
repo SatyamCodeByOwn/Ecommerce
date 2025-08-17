@@ -2,6 +2,8 @@ package app.ecom.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,8 +21,8 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(nullable = false)
-    private double amount;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -46,5 +48,10 @@ public class Payment {
         COMPLETED,
         FAILED,
         REFUNDED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.paymentDate = LocalDateTime.now();
     }
 }

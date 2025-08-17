@@ -12,12 +12,13 @@ public class Categories {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int categoryId;
+    private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true, length = 50)
-    private CategoryName categoryName;
+    private CategoryName name;
 
+    // The enum is kept within the entity class
     public enum CategoryName {
         ELECTRONICS,
         FASHION,

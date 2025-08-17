@@ -14,27 +14,26 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
-    private double price = 0.00;
+    private double price;
 
     @Column(nullable = false)
-    private int stock = 0;
+    private int stock;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
-    private Seller seller;
+    private User seller;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Categories category;
 
-//    @Lob
-//
-//    private byte[] imagePath;
+    @Column(length = 255)
+    private String imagePath;
 }

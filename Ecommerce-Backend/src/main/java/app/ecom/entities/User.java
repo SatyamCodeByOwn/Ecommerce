@@ -17,7 +17,7 @@ public class User {
 
     @NotBlank
     @Size(max = 30)
-    @Column(name = "username", length = 30, nullable = false)
+    @Column(name = "username", length = 30, nullable = false, unique = true)
     private String username;
 
     @NotBlank
@@ -25,12 +25,6 @@ public class User {
     @Size(max = 30)
     @Column(name = "email", length = 30, nullable = false, unique = true)
     private String email;
-
-    @NotBlank
-    @Size(max = 10)
-    @Column(name = "password_salt", length = 10, nullable = false)
-    @ToString.Exclude
-    private String passwordSalt;
 
     @NotBlank
     @Size(max = 64)

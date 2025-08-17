@@ -17,7 +17,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -34,7 +34,7 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime orderDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id")
     private ShippingAddress shippingAddress;
 
@@ -44,5 +44,10 @@ public class Order {
         SHIPPED,
         DELIVERED,
         CANCELLED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.orderDate = LocalDateTime.now();
     }
 }

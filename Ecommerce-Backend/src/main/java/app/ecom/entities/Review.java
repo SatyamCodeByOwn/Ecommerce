@@ -15,16 +15,16 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Reviews are made by a User (customer)
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // A review is for a specific Product
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(nullable = false)
-    private double rating;
+    private double rating; // E.g., 1.0 to 5.0
 
     @Column(columnDefinition = "TEXT")
     private String comment;
@@ -32,12 +32,11 @@ public class Review {
     @Column(nullable = false)
     private LocalDate submissionDate;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private Seller seller;
+    // The seller is associated with the product, so no direct 'seller' field is needed here.
+    // You can get the seller via review.getProduct().getSeller()
 
     @PrePersist
     protected void onCreate() {
-        this.submissionDate = LocalDate.now();
+        this.submissionDate = LocalDate.now(); // Automatically sets the submission date on creation
     }
 }

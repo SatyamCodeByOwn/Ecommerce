@@ -3,12 +3,14 @@ package app.ecom.exceptions;
 import app.ecom.dto.response_api.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleRoleNameExists(ResourceAlreadyExistsException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
@@ -18,7 +20,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(RuntimeException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
@@ -29,7 +31,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<ApiResponse<Object>> handleFileStorage(FileStorageException ex) {
-        ApiResponse<Object> response = new ApiResponse<>(500, ex.getMessage(), null);
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage(),
+                null
+        );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 

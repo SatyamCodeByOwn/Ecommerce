@@ -1,24 +1,22 @@
 package app.ecom.dto.mappers;
 
-import app.ecom.dto.request_dto.WishlistRequestDTO;
 import app.ecom.dto.response_dto.WishlistResponseDTO;
-import app.ecom.entities.User;
 import app.ecom.entities.Wishlist;
+import java.util.stream.Collectors;
 
 public class WishlistMapper {
 
-    // Convert Request DTO → Entity
-    public static Wishlist toEntity(WishlistRequestDTO dto, User user) {
-        Wishlist wishlist = new Wishlist();
-        wishlist.setUser(user);
-        return wishlist;
-    }
+    public static WishlistResponseDTO toResponseDTO(Wishlist wishlist) {
+        if (wishlist == null) {
+            return null;
+        }
 
-    // Convert Entity → Response DTO
-    public static WishlistResponseDTO toDTO(Wishlist wishlist) {
         return new WishlistResponseDTO(
                 wishlist.getId(),
-                wishlist.getUser().getId()
+                wishlist.getUser().getId(),
+                wishlist.getWishlistItems().stream()
+                        .map(WishlistItemMapper::toResponseDTO)
+                        .collect(Collectors.toList())
         );
     }
 }

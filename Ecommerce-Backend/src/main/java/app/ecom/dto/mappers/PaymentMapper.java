@@ -8,14 +8,12 @@ import java.time.LocalDateTime;
 
 public class PaymentMapper {
 
-
     public static Payment toEntity(PaymentRequestDto dto, Order order) {
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setAmount(dto.getAmount());
-        payment.setMethod(Payment.PaymentMethod.valueOf(dto.getMethod()));
-        payment.setStatus(Payment.PaymentStatus.PENDING); // Default status
-        payment.setPaymentDate(LocalDateTime.now()); // Set current time
+        payment.setMethod(Payment.PaymentMethod.valueOf(dto.getMethod().toUpperCase()));
+        // Status is set by the service, payment date by @PrePersist
         return payment;
     }
 

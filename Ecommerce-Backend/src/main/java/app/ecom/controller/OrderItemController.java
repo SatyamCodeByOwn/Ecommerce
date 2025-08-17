@@ -2,10 +2,9 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.OrderItemRequestDto;
 import app.ecom.dto.response_dto.OrderItemResponseDto;
-import app.ecom.services.OrderItemService; // You will need to create this service
+import app.ecom.services.OrderItemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +13,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api") // Using a common base path
-@RequiredArgsConstructor
+@RequestMapping("/api")
 public class OrderItemController {
     @Autowired
-    private  OrderItemService orderItemService;
+    private OrderItemService orderItemService;
 
     /**
-     * Adds a new item to an existing order.
+     * Adds a new item to an existing or new PENDING order for a user.
      *
-     * @param orderId             The ID of the order to which the item will be added.
+     * @param userId The ID of the user.
      * @param orderItemRequestDto The DTO containing the product ID and quantity.
      * @return A ResponseEntity with the created OrderItemResponseDto and HTTP status 201 (Created).
      */
-    @PostMapping("/orders/{orderId}/items")
+    @PostMapping("/orders/users/{userId}/items")
     public ResponseEntity<OrderItemResponseDto> addItemToOrder(
-            @PathVariable int orderId,
+            @PathVariable int userId,
             @Valid @RequestBody OrderItemRequestDto orderItemRequestDto) {
-        OrderItemResponseDto createdItem = orderItemService.addItemToOrder(orderId, orderItemRequestDto);
+        OrderItemResponseDto createdItem = orderItemService.addItemToOrder(userId, orderItemRequestDto);
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
 
@@ -51,7 +49,7 @@ public class OrderItemController {
      * Updates the quantity of a specific item in an order.
      *
      * @param itemId   The ID of the order item to update.
-     * @param quantity The new quantity for the item.
+     * @param quantity The new quantity.
      * @return A ResponseEntity containing the updated OrderItemResponseDto.
      */
     @PutMapping("/order-items/{itemId}")

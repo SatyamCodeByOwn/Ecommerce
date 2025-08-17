@@ -5,6 +5,7 @@ import app.ecom.dto.request_dto.SellerRequestDTO;
 import app.ecom.dto.response_dto.SellerResponseDTO;
 import app.ecom.entities.Seller;
 import app.ecom.entities.User;
+import app.ecom.exceptions.FileStorageException;
 import app.ecom.exceptions.ResourceAlreadyExistsException;
 import app.ecom.exceptions.ResourceNotFoundException;
 import app.ecom.repositories.SellerRepository;
@@ -27,7 +28,7 @@ public class SellerService {
     private UserRepository userRepository;
 
     @Transactional
-    public SellerResponseDTO createSeller(SellerRequestDTO dto) throws IOException {
+    public SellerResponseDTO createSeller(SellerRequestDTO dto) {
         if (sellerRepository.existsByGstNumber(dto.getGstNumber())) {
             throw new ResourceAlreadyExistsException("Seller", "GST Number", dto.getGstNumber());
         }
@@ -35,10 +36,13 @@ public class SellerService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
 
-        Seller seller = SellerMapper.toEntity(dto, user);
-        Seller savedSeller = sellerRepository.save(seller);
-
-        return SellerMapper.toDTO(savedSeller);
+        try {
+            Seller seller = SellerMapper.toEntity(dto, user);
+            Seller savedSeller = sellerRepository.save(seller);
+            return SellerMapper.toDTO(savedSeller);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to read PAN card file");
+        }
     }
 
     public SellerResponseDTO getSellerById(int id) {
@@ -55,17 +59,20 @@ public class SellerService {
     }
 
     @Transactional
-    public SellerResponseDTO updateSeller(int id, SellerRequestDTO dto) throws IOException {
+    public SellerResponseDTO updateSeller(int id, SellerRequestDTO dto) {
         Seller seller = sellerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + id));
 
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
 
-        SellerMapper.updateEntity(seller, dto, user);
-        Seller updatedSeller = sellerRepository.save(seller);
-
-        return SellerMapper.toDTO(updatedSeller);
+        try {
+            SellerMapper.updateEntity(seller, dto, user);
+            Seller updatedSeller = sellerRepository.save(seller);
+            return SellerMapper.toDTO(updatedSeller);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to read PAN card file");
+        }
     }
 
     @Transactional
