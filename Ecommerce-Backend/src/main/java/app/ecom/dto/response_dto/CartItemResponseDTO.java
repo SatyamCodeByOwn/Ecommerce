@@ -1,20 +1,16 @@
 package app.ecom.dto.response_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CartItemResponseDTO {
-    private int id;
-    private int productId;
+    private int id;          // cart item id
+    private int productId;   // product id
     private String productName;
+    private String productDescription;
     private double productPrice;
     private int quantity;
-    private double itemTotalPrice; // Quantity * Product Price
-    private String productImagePath;
-    private LocalDateTime dateAdded;
 }

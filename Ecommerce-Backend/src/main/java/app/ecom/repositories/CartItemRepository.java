@@ -2,8 +2,11 @@ package app.ecom.repositories;
 
 import app.ecom.entities.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
-    Optional<CartItem> findByCartIdAndProductId(int cartId, int productId);
+
+    // ✅ Delete all items for a specific cart
+    void deleteAllByCartId(int cartId);
 }

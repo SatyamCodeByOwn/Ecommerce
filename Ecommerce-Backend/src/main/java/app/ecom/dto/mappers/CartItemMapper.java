@@ -5,20 +5,14 @@ import app.ecom.entities.CartItem;
 
 public class CartItemMapper {
 
-    public static CartItemResponseDTO toResponseDTO(CartItem item) {
-        if (item == null || item.getProduct() == null) {
-            return null;
-        }
-
-        return new CartItemResponseDTO(
-                item.getId(),
-                item.getProduct().getId(),
-                item.getProduct().getName(),
-                item.getProduct().getPrice(),
-                item.getQuantity(),
-                item.getQuantity() * item.getProduct().getPrice(),
-                item.getProduct().getImagePath(),
-                item.getDateAdded()
-        );
+    public static CartItemResponseDTO toResponseDTO(CartItem cartItem) {
+        return CartItemResponseDTO.builder()
+                .id(cartItem.getId())
+                .productId(cartItem.getProduct().getId())
+                .productName(cartItem.getProduct().getName())
+                .productDescription(cartItem.getProduct().getDescription())
+                .productPrice(cartItem.getProduct().getPrice())
+                .quantity(cartItem.getQuantity())
+                .build();
     }
 }
