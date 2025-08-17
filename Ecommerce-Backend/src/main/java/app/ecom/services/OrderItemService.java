@@ -7,113 +7,90 @@ import app.ecom.entities.Order;
 import app.ecom.entities.OrderItem;
 import app.ecom.entities.Product;
 import app.ecom.entities.User;
-import app.ecom.exceptions.ResourceNotFoundException;
 import app.ecom.repositories.OrderItemRepository;
 import app.ecom.repositories.OrderRepository;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class OrderItemService {
 
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public OrderItemResponseDto addItemToOrder(int userId, OrderItemRequestDto orderItemRequestDto) {
+    @Transactional
+    public OrderItemResponseDto addItemToOrder(int userId, OrderItemRequestDto itemDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
-        Order order = orderRepository.findByUserAndStatus(user, Order.OrderStatus.PENDING)
+        Order order = orderRepository.findByUserIdAndStatus(userId, Order.OrderStatus.PENDING)
                 .orElseGet(() -> {
                     Order newOrder = new Order();
                     newOrder.setUser(user);
                     newOrder.setStatus(Order.OrderStatus.PENDING);
+                    newOrder.setTotalAmount(0.0);
                     return orderRepository.save(newOrder);
                 });
 
-        Product product = productRepository.findById(orderItemRequestDto.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + orderItemRequestDto.getProductId()));
+        Product product = productRepository.findById(itemDto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + itemDto.getProductId()));
 
-        Optional<OrderItem> existingItemOptional = orderItemRepository.findByOrderAndProduct(order, product);
-
-        OrderItem orderItem;
-        if (existingItemOptional.isPresent()) {
-            orderItem = existingItemOptional.get();
-            orderItem.setQuantity(orderItem.getQuantity() + orderItemRequestDto.getQuantity());
-        } else {
-            orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setProduct(product);
-            orderItem.setQuantity(orderItemRequestDto.getQuantity());
-            orderItem.setPrice(product.getPrice());
-        }
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+        orderItem.setProduct(product);
+        orderItem.setQuantity(itemDto.getQuantity());
+        orderItem.setPrice(product.getPrice());
 
         OrderItem savedItem = orderItemRepository.save(orderItem);
 
-        // Update the order's total amount after saving the item
-        updateOrderTotal(order);
+        order.setTotalAmount(order.getTotalAmount() + (orderItem.getQuantity() * orderItem.getPrice()));
+        orderRepository.save(order);
 
-        return OrderItemMapper.toResponseDTO(savedItem);
-    }
-
-    public OrderItemResponseDto updateOrderItemQuantity(int itemId, int quantity) {
-        OrderItem orderItem = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found with id: " + itemId));
-
-        orderItem.setQuantity(quantity);
-
-        OrderItem updatedItem = orderItemRepository.save(orderItem);
-
-        // Update the order's total amount after updating the item
-        updateOrderTotal(updatedItem.getOrder());
-
-        return OrderItemMapper.toResponseDTO(updatedItem);
-    }
-
-    public void removeOrderItem(int itemId) {
-        OrderItem orderItem = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("OrderItem not found with id: " + itemId));
-
-        Order order = orderItem.getOrder();
-
-        orderItemRepository.delete(orderItem);
-
-        // Update the order's total amount after removing the item
-        updateOrderTotal(order);
+        return OrderItemMapper.toDTO(savedItem);
     }
 
     public List<OrderItemResponseDto> getItemsByOrderId(int orderId) {
         List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
         return items.stream()
-                .map(OrderItemMapper::toResponseDTO)
+                .map(OrderItemMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Private helper method to calculate and update the total amount of an order.
-     * @param order The order entity to update.
-     */
-    private void updateOrderTotal(Order order) {
-        // Since the order's item list is lazy-loaded, we need to re-fetch it or make sure it's loaded.
-        List<OrderItem> orderItems = orderItemRepository.findByOrderId(order.getId());
-        double newTotalAmount = orderItems.stream()
-                .mapToDouble(item -> item.getQuantity() * item.getPrice())
-                .sum();
-        order.setTotalAmount(newTotalAmount);
+    @Transactional
+    public OrderItemResponseDto updateOrderItemQuantity(int itemId, int quantity) {
+        OrderItem orderItem = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Order item not found with ID: " + itemId));
+        orderItem.setQuantity(quantity);
+
+        Order order = orderItem.getOrder();
+        double oldTotal = order.getTotalAmount();
+        double oldItemTotal = orderItem.getPrice() * (orderItem.getQuantity() - quantity); // Calculate the old item total amount
+        order.setTotalAmount(oldTotal - oldItemTotal + (orderItem.getPrice() * quantity)); // Update the total amount
+        orderRepository.save(order);
+
+        OrderItem updatedItem = orderItemRepository.save(orderItem);
+        return OrderItemMapper.toDTO(updatedItem);
+    }
+
+    @Transactional
+    public void removeOrderItem(int itemId) {
+        OrderItem orderItem = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Order item not found with ID: " + itemId));
+
+        Order order = orderItem.getOrder();
+        order.setTotalAmount(order.getTotalAmount() - (orderItem.getPrice() * orderItem.getQuantity()));
+        order.getOrderItems().remove(orderItem);
+
         orderRepository.save(order);
     }
 }

@@ -13,7 +13,7 @@ public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; // Changed from cartItemId to id
+    private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
@@ -27,5 +27,5 @@ public class CartItem {
     private int quantity = 1;
 
     @Column(nullable = false)
-    private LocalDateTime dateAdded = LocalDateTime.now(); // Timestamp for when item was added
+    private LocalDateTime dateAdded = LocalDateTime.now();
 }

@@ -2,51 +2,73 @@ package app.ecom.services;
 
 import app.ecom.dto.mappers.OrderMapper;
 import app.ecom.dto.request_dto.OrderRequestDTO;
+import app.ecom.dto.request_dto.OrderItemRequestDto;
 import app.ecom.dto.response_dto.OrderResponseDTO;
 import app.ecom.entities.Order;
 import app.ecom.entities.OrderItem;
+import app.ecom.entities.Product;
 import app.ecom.entities.ShippingAddress;
 import app.ecom.entities.User;
-import app.ecom.exceptions.ResourceNotFoundException;
-import app.ecom.repositories.OrderItemRepository;
 import app.ecom.repositories.OrderRepository;
+import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.ShippingAddressRepository;
 import app.ecom.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-    @Autowired
-    private ShippingAddressRepository shippingAddressRepository;
 
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final ShippingAddressRepository shippingAddressRepository;
+    private final OrderItemService orderItemService;
+
+    @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
         User user = userRepository.findById(orderRequestDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + orderRequestDTO.getUserId()));
-
-        List<OrderItem> orderItems = orderItemRepository.findAllById(orderRequestDTO.getOrderItemIds());
-        if (orderItems.size() != orderRequestDTO.getOrderItemIds().size()) {
-            throw new ResourceNotFoundException("One or more order items not found.");
-        }
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + orderRequestDTO.getUserId()));
 
         ShippingAddress shippingAddress = null;
         if (orderRequestDTO.getShippingAddressId() != null) {
             shippingAddress = shippingAddressRepository.findById(orderRequestDTO.getShippingAddressId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Shipping Address not found with id: " + orderRequestDTO.getShippingAddressId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with ID: " + orderRequestDTO.getShippingAddressId()));
         }
 
-        Order order = OrderMapper.toEntity(orderRequestDTO, user, orderItems, shippingAddress);
+        Order order = new Order();
+        order.setUser(user);
+        order.setShippingAddress(shippingAddress);
+        order.setStatus(Order.OrderStatus.PENDING);
+        order.setTotalAmount(0.0);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        double totalAmount = 0.0;
+
+        for (OrderItemRequestDto itemDto : orderRequestDTO.getItems()) {
+            Product product = productRepository.findById(itemDto.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + itemDto.getProductId()));
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemDto.getQuantity());
+            orderItem.setPrice(product.getPrice());
+
+            orderItems.add(orderItem);
+            totalAmount += product.getPrice() * itemDto.getQuantity();
+        }
+
+        order.setOrderItems(orderItems);
+        order.setTotalAmount(totalAmount);
+
         Order savedOrder = orderRepository.save(order);
 
         return OrderMapper.toDTO(savedOrder);
@@ -54,7 +76,7 @@ public class OrderService {
 
     public OrderResponseDTO getOrderById(int id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
         return OrderMapper.toDTO(order);
     }
 
@@ -65,19 +87,25 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public OrderResponseDTO updateOrderStatus(int id, String status) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
 
-        order.setStatus(Order.OrderStatus.valueOf(status.toUpperCase()));
-        Order updatedOrder = orderRepository.save(order);
-
-        return OrderMapper.toDTO(updatedOrder);
+        try {
+            Order.OrderStatus newStatus = Order.OrderStatus.valueOf(status.toUpperCase());
+            order.setStatus(newStatus);
+            Order updatedOrder = orderRepository.save(order);
+            return OrderMapper.toDTO(updatedOrder);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid order status: " + status);
+        }
     }
 
+    @Transactional
     public void cancelOrder(int id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
         orderRepository.delete(order);
     }
 }
