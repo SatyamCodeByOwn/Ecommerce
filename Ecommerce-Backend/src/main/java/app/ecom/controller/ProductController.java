@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,8 +21,8 @@ public class ProductController {
 
     // CREATE a new product
     // POST /api/products
-    @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO dto) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @ModelAttribute ProductRequestDTO dto) throws IOException {
         ProductResponseDTO newProduct = productService.createProduct(dto);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
@@ -59,11 +61,15 @@ public class ProductController {
 
     // UPDATE an existing product
     // PUT /api/products/{id}
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable int id, @Valid @RequestBody ProductRequestDTO dto) {
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @PathVariable int id,
+            @Valid @ModelAttribute ProductRequestDTO dto) throws IOException {
+
         ProductResponseDTO updatedProduct = productService.updateProduct(id, dto);
         return ResponseEntity.ok(updatedProduct);
     }
+
 
     // DELETE a product
     // DELETE /api/products/{id}
