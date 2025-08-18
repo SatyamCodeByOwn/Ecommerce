@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class ProductService {
     private CategoriesRepository categoriesRepository; // Naming convention corrected
 
     @Transactional
-    public ProductResponseDTO createProduct(ProductRequestDTO dto) {
+    public ProductResponseDTO createProduct(ProductRequestDTO dto) throws IOException {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + dto.getSellerId()));
 
@@ -69,7 +70,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDTO updateProduct(int id, ProductRequestDTO dto) {
+    public ProductResponseDTO updateProduct(int id, ProductRequestDTO dto) throws IOException {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
