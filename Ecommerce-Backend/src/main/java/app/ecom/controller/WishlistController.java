@@ -3,7 +3,6 @@ package app.ecom.controller;
 import app.ecom.dto.response_dto.WishlistResponseDTO;
 import app.ecom.services.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,31 +13,35 @@ public class WishlistController {
     @Autowired
     private WishlistService wishlistService;
 
-    // GET a user's wishlist (or create an empty one)
+    // ✅ Get the wishlist of a user (or create empty one if none exists)
     // GET /api/wishlist/users/{userId}
     @GetMapping("/users/{userId}")
     public ResponseEntity<WishlistResponseDTO> getOrCreateWishlist(@PathVariable int userId) {
-        WishlistResponseDTO wishlist = wishlistService.getOrCreateWishlist(userId);
-        return ResponseEntity.ok(wishlist);
+        return ResponseEntity.ok(wishlistService.getOrCreateWishlist(userId));
     }
 
-    // ADD a product to a user's wishlist
+    // ✅ Add a product to the user's wishlist
     // POST /api/wishlist/users/{userId}/products/{productId}
     @PostMapping("/users/{userId}/products/{productId}")
     public ResponseEntity<WishlistResponseDTO> addProductToWishlist(
             @PathVariable int userId,
             @PathVariable int productId) {
-        WishlistResponseDTO updatedWishlist = wishlistService.addProductToWishlist(userId, productId);
-        return new ResponseEntity<>(updatedWishlist, HttpStatus.OK);
+        return ResponseEntity.ok(wishlistService.addProductToWishlist(userId, productId));
     }
 
-    // REMOVE a product from a user's wishlist
+    // ✅ Remove a product from the user's wishlist
     // DELETE /api/wishlist/users/{userId}/products/{productId}
     @DeleteMapping("/users/{userId}/products/{productId}")
     public ResponseEntity<WishlistResponseDTO> removeProductFromWishlist(
             @PathVariable int userId,
             @PathVariable int productId) {
-        WishlistResponseDTO updatedWishlist = wishlistService.removeProductFromWishlist(userId, productId);
-        return new ResponseEntity<>(updatedWishlist, HttpStatus.OK);
+        return ResponseEntity.ok(wishlistService.removeProductFromWishlist(userId, productId));
+    }
+
+    // ✅ Clear the wishlist
+    // DELETE /api/wishlist/users/{userId}/clear
+    @DeleteMapping("/users/{userId}/clear")
+    public ResponseEntity<WishlistResponseDTO> clearWishlist(@PathVariable int userId) {
+        return ResponseEntity.ok(wishlistService.clearWishlist(userId));
     }
 }

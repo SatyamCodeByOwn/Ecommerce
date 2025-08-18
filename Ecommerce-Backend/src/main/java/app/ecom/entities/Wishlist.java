@@ -1,15 +1,12 @@
 package app.ecom.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "wishlists") // Using a plural table name is a common practice
+@Table(name = "wishlists")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,11 +20,23 @@ public class Wishlist {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @OneToMany(
-            mappedBy = "wishlist", // The name of the field in the WishlistItem entity
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<WishlistItem> wishlistItems = new HashSet<>();
+
+    // ✅ Helper methods for bidirectional sync
+    public void addWishlistItem(WishlistItem item) {
+        wishlistItems.add(item);
+        item.setWishlist(this);
+    }
+
+    public void removeWishlistItem(WishlistItem item) {
+        wishlistItems.remove(item);
+        item.setWishlist(null);
+    }
+
+    public void clearWishlistItems() {
+        for (WishlistItem item : new HashSet<>(wishlistItems)) {
+            removeWishlistItem(item);
+        }
+    }
 }

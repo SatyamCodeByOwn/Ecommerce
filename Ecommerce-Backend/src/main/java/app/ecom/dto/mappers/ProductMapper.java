@@ -6,16 +6,30 @@ import app.ecom.entities.Categories;
 import app.ecom.entities.Product;
 import app.ecom.entities.User;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class ProductMapper {
 
+
+    private final static String PRODUCT_IMAGES = "uploads/";
+
     // Convert DTO and entities to a Product entity
-    public static Product toEntity(ProductRequestDTO dto, User seller, Categories category) {
+    public static Product toEntity(ProductRequestDTO dto, User seller, Categories category) throws IOException {
         Product product = new Product();
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
-        product.setImagePath(dto.getImagePath());
+
+        String fileName = System.currentTimeMillis() + "_" + dto.getProductImage().getOriginalFilename();
+        Path path = Paths.get(PRODUCT_IMAGES + fileName);
+        Files.createDirectories(path.getParent());
+        Files.write(path, dto.getProductImage().getBytes());
+
+        product.setImagePath(path.toString());
         product.setSeller(seller);
         product.setCategory(category);
         return product;
@@ -44,7 +58,7 @@ public class ProductMapper {
         );
     }
 
-    public static void updateEntity(Product product, ProductRequestDTO dto, User seller, Categories category) {
+    public static void updateEntity(Product product, ProductRequestDTO dto, User seller, Categories category) throws IOException {
         if (dto.getName() != null) {
             product.setName(dto.getName());
         }
@@ -57,9 +71,15 @@ public class ProductMapper {
         if (dto.getStock() != 0) {
             product.setStock(dto.getStock());
         }
-        if (dto.getImagePath() != null) {
-            product.setImagePath(dto.getImagePath());
+        if (dto.getProductImage() != null && !dto.getProductImage().isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + dto.getProductImage().getOriginalFilename();
+            Path path = Paths.get(PRODUCT_IMAGES + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, dto.getProductImage().getBytes());
+
+            product.setImagePath(path.toString());
         }
+
         if (seller != null) {
             product.setSeller(seller);
         }

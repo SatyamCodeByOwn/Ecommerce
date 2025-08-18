@@ -1,18 +1,19 @@
 package app.ecom.dto.response_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class WishlistItemResponseDTO {
-    private int id;
-    private int productId;
-    private String productName;
-    private double productPrice;
-    private String productImagePath;
-    private LocalDateTime dateAdded;
+    private int id;                  // wishlist item id
+    private int productId;           // product id
+    private String productName;      // product name
+    private String productDescription; // product description
+    private double productPrice;     // product price
+    private LocalDateTime dateAdded; // when added to wishlist
 }
+
