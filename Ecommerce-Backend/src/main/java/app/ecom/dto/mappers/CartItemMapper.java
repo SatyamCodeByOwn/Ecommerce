@@ -7,25 +7,16 @@ import app.ecom.entities.Product;
 
 public class CartItemMapper {
 
-    public static CartItem toEntity(CartItemRequestDTO dto, Product product) {
-        CartItem cartItem = new CartItem();
-        cartItem.setProduct(product);
-        cartItem.setQuantity(dto.getQuantity());
-        return cartItem;
-    }
 
-    public static CartItemResponseDTO toDTO(CartItem cartItem) {
-        if (cartItem == null) {
-            return null;
-        }
+    public static CartItemResponseDTO toResponseDTO(CartItem cartItem) {
+        return CartItemResponseDTO.builder()
+                .id(cartItem.getId())
+                .productId(cartItem.getProduct().getId())
+                .productName(cartItem.getProduct().getName())
+                .productDescription(cartItem.getProduct().getDescription())
+                .productPrice(cartItem.getProduct().getPrice())
+                .quantity(cartItem.getQuantity())
+                .build();
 
-        CartItemResponseDTO dto = new CartItemResponseDTO();
-        dto.setId(cartItem.getId());
-        dto.setProductId(cartItem.getProduct().getId());
-        dto.setQuantity(cartItem.getQuantity());
-        // Assuming your Product entity has a getPrice() method
-        dto.setPrice(cartItem.getProduct().getPrice());
-        dto.setDateAdded(cartItem.getDateAdded());
-        return dto;
     }
 }

@@ -1,15 +1,16 @@
 package app.ecom.dto.response_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class WishlistResponseDTO {
-    private int id;
-    private int userId;
-    private List<WishlistItemResponseDTO> wishlistItems;
+    private int wishlistId;                       // wishlist id
+    private int userId;                            // user id
+    private String userName;                       // user name
+    private List<WishlistItemResponseDTO> items;   // list of wishlist items
 }

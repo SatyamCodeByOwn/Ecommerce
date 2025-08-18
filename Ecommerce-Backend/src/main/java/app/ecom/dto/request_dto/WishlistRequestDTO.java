@@ -1,16 +1,15 @@
 package app.ecom.dto.request_dto;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WishlistRequestDTO { // Renamed for clarity
+public class WishlistRequestDTO {
 
-    @Positive(message = "User ID must be a positive number")
-    private int userId;
-
-    @Positive(message = "Product ID must be a positive number")
+    @NotNull(message = "Product ID is required")
     private int productId;
 }
