@@ -37,7 +37,12 @@ public class User {
     @Column(name = "phone_number", length = 20, nullable = false, unique = true)
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    // ✅ Needed for Spring Security
+    public String getPassword() {
+        return this.passwordHash;
+    }
 }
