@@ -55,16 +55,77 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Anyone can view products
+                        //  Anyone can view products
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
-                        // ✅ Only SELLER can add, update, delete products
+                        //  Only SELLER can add, update, delete products
                         .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("SELLER")
 
-                        // ✅ Allow all other requests without authentication
+
+                        //  Cart endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/carts/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/api/carts/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/api/carts/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/carts/**").hasRole("CUSTOMER")
+                        //  Allow all other requests without authentication
+
+
+                        // Commission endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/commissions/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/commissions/**").hasAnyRole("OWNER","SELLER")
+
+                        // Order endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","SELLER","OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasAnyRole("OWNER","SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("CUSTOMER")
+
+                        // OrderItem endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/orders/users/{userId}/items").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/{orderId}/items").hasAnyRole("CUSTOMER","SELLER","OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/order-items/{itemId}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/order-items/{itemId}").hasRole("CUSTOMER")
+
+
+                        // Payment endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/payments").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/{id}").hasAnyRole("CUSTOMER","OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/order/{orderId}").hasAnyRole("CUSTOMER","OWNER")
+
+                        // Review endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/products/{productId}").permitAll()
+
+                        // Seller endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/sellers").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
+                        .requestMatchers(HttpMethod.GET, "/api/sellers").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/sellers/{id}").hasRole("OWNER")
+
+                        // Shipping Address endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/shipping-addresses").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/shipping-addresses/users/{userId}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/shipping-addresses/{id}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/api/shipping-addresses/{id}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/shipping-addresses/{id}").hasRole("CUSTOMER")
+
+                        // User endpoints
+
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("OWNER")
+
+
+                        // Wishlist endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/wishlist/users/{userId}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/api/wishlist/users/{userId}/products/{productId}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/wishlist/users/{userId}/products/{productId}").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/wishlist/users/{userId}/clear").hasRole("CUSTOMER")
+
                         .anyRequest().permitAll()
+
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults()); // Only triggered for POST/PUT/DELETE above
