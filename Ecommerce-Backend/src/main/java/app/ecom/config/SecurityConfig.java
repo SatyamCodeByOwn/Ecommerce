@@ -75,7 +75,7 @@ public class SecurityConfig {
                         // Commission endpoints
                         .requestMatchers(HttpMethod.POST, "/api/commissions/**").hasRole("OWNER")
                         .requestMatchers(HttpMethod.GET, "/api/commissions/**").hasAnyRole("OWNER","SELLER")
-
+                        .requestMatchers(HttpMethod.GET, "/api/commissions/owner/revenue").hasRole("OWNER")
                         // Order endpoints
                         .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","SELLER","OWNER")

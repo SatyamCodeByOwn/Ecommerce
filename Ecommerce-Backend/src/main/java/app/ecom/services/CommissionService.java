@@ -80,4 +80,9 @@ public class CommissionService {
                 .map(commissionMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    public BigDecimal getOwnerRevenue() {
+        return commissionRepository.findTotalRevenue();
+    }
+
 }
