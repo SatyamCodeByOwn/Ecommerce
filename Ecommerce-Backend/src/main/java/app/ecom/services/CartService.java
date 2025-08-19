@@ -2,14 +2,14 @@ package app.ecom.services;
 
 
 
-import app.ecom.dto.request_dto.CartItemRequestDTO;
+import app.ecom.dto.request_dto.CartRequestDTO;
 import app.ecom.dto.response_dto.CartResponseDTO;
 import app.ecom.entities.Cart;
 import app.ecom.entities.CartItem;
 import app.ecom.entities.Product;
 import app.ecom.entities.User;
 
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.dto.mappers.CartMapper;
 
 import app.ecom.repositories.CartItemRepository;
@@ -17,7 +17,6 @@ import app.ecom.repositories.CartRepository;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +54,7 @@ public class CartService {
     }
 
     // ✅ Add product to cart
-    public CartResponseDTO addProductToCart(int userId, CartItemRequestDTO dto) {
+    public CartResponseDTO addProductToCart(int userId, CartRequestDTO dto) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 

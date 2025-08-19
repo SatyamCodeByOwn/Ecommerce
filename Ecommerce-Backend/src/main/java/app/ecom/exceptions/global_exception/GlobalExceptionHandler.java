@@ -1,6 +1,10 @@
-package app.ecom.exceptions;
+package app.ecom.exceptions.global_exception;
 
-import app.ecom.dto.response_api.ApiResponse;
+import app.ecom.exceptions.custom.FileStorageException;
+import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
+import app.ecom.exceptions.custom.SellerNotApprovedException;
+import app.ecom.exceptions.response_api.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -38,6 +42,18 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+
+    @ExceptionHandler(SellerNotApprovedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSellerNotApproved(SellerNotApprovedException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),   // 403 instead of 500
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {

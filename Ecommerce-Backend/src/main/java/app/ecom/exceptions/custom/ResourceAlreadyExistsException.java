@@ -1,4 +1,4 @@
-package app.ecom.exceptions;
+package app.ecom.exceptions.custom;
 
 public class ResourceAlreadyExistsException extends RuntimeException {
     public ResourceAlreadyExistsException(String resourceName, String fieldName, String fieldValue) {

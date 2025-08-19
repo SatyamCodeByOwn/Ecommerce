@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemRequestDTO {
+public class CartRequestDTO {
 
     @NotNull(message = "Product ID cannot be null")
     private Integer productId;

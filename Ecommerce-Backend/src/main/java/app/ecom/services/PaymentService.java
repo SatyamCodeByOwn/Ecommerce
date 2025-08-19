@@ -5,7 +5,7 @@ import app.ecom.dto.request_dto.PaymentRequestDto;
 import app.ecom.dto.response_dto.PaymentResponseDto;
 import app.ecom.entities.Order;
 import app.ecom.entities.Payment;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.repositories.OrderRepository;
 import app.ecom.repositories.PaymentRepository;
 import lombok.RequiredArgsConstructor;
