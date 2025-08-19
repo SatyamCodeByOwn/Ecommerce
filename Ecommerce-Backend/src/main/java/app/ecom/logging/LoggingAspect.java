@@ -1,4 +1,4 @@
-package app.ecom.aspects;
+package app.ecom.logging;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

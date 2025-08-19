@@ -2,6 +2,7 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.PaymentRequestDto;
 import app.ecom.dto.response_dto.PaymentResponseDto;
+import app.ecom.exceptions.response_api.ApiResponse;
 import app.ecom.services.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,23 +19,46 @@ import java.util.List;
 public class PaymentController {
 
     @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
+    // CREATE (Process Payment)
     @PostMapping
-    public ResponseEntity<PaymentResponseDto> processPayment(@Valid @RequestBody PaymentRequestDto paymentRequestDto) {
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> processPayment(
+            @Valid @RequestBody PaymentRequestDto paymentRequestDto) {
         PaymentResponseDto paymentResponse = paymentService.processPayment(paymentRequestDto);
-        return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                ApiResponse.<PaymentResponseDto>builder()
+                        .status(HttpStatus.CREATED.value())
+                        .message("Payment processed successfully")
+                        .data(paymentResponse)
+                        .build(),
+                HttpStatus.CREATED
+        );
     }
 
+    // READ (Payment by ID)
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> getPaymentById(@PathVariable int id) {
         PaymentResponseDto payment = paymentService.getPaymentById(id);
-        return ResponseEntity.ok(payment);
+        return ResponseEntity.ok(
+                ApiResponse.<PaymentResponseDto>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Payment details fetched successfully")
+                        .data(payment)
+                        .build()
+        );
     }
 
+    // READ (Payments by OrderId)
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<PaymentResponseDto>> getPaymentsByOrderId(@PathVariable int orderId) {
+    public ResponseEntity<ApiResponse<List<PaymentResponseDto>>> getPaymentsByOrderId(@PathVariable int orderId) {
         List<PaymentResponseDto> payments = paymentService.getPaymentsByOrderId(orderId);
-        return ResponseEntity.ok(payments);
+        return ResponseEntity.ok(
+                ApiResponse.<List<PaymentResponseDto>>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Payments fetched successfully for the order")
+                        .data(payments)
+                        .build()
+        );
     }
 }

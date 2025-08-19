@@ -1,8 +1,10 @@
 package app.ecom.controller;
 
 import app.ecom.dto.response_dto.WishlistResponseDTO;
+import app.ecom.exceptions.response_api.ApiResponse;
 import app.ecom.services.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,35 +15,55 @@ public class WishlistController {
     @Autowired
     private WishlistService wishlistService;
 
-    // ✅ Get the wishlist of a user (or create empty one if none exists)
-    // GET /api/wishlist/users/{userId}
     @GetMapping("/users/{userId}")
-    public ResponseEntity<WishlistResponseDTO> getOrCreateWishlist(@PathVariable int userId) {
-        return ResponseEntity.ok(wishlistService.getOrCreateWishlist(userId));
+    public ResponseEntity<ApiResponse<WishlistResponseDTO>> getOrCreateWishlist(@PathVariable int userId) {
+        WishlistResponseDTO wishlist = wishlistService.getOrCreateWishlist(userId);
+        return ResponseEntity.ok(
+                ApiResponse.<WishlistResponseDTO>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Wishlist fetched successfully")
+                        .data(wishlist)
+                        .build()
+        );
     }
 
-    // ✅ Add a product to the user's wishlist
-    // POST /api/wishlist/users/{userId}/products/{productId}
     @PostMapping("/users/{userId}/products/{productId}")
-    public ResponseEntity<WishlistResponseDTO> addProductToWishlist(
+    public ResponseEntity<ApiResponse<WishlistResponseDTO>> addProductToWishlist(
             @PathVariable int userId,
             @PathVariable int productId) {
-        return ResponseEntity.ok(wishlistService.addProductToWishlist(userId, productId));
+        WishlistResponseDTO wishlist = wishlistService.addProductToWishlist(userId, productId);
+        return ResponseEntity.ok(
+                ApiResponse.<WishlistResponseDTO>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Product added to wishlist successfully")
+                        .data(wishlist)
+                        .build()
+        );
     }
 
-    // ✅ Remove a product from the user's wishlist
-    // DELETE /api/wishlist/users/{userId}/products/{productId}
     @DeleteMapping("/users/{userId}/products/{productId}")
-    public ResponseEntity<WishlistResponseDTO> removeProductFromWishlist(
+    public ResponseEntity<ApiResponse<WishlistResponseDTO>> removeProductFromWishlist(
             @PathVariable int userId,
             @PathVariable int productId) {
-        return ResponseEntity.ok(wishlistService.removeProductFromWishlist(userId, productId));
+        WishlistResponseDTO wishlist = wishlistService.removeProductFromWishlist(userId, productId);
+        return ResponseEntity.ok(
+                ApiResponse.<WishlistResponseDTO>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Product removed from wishlist successfully")
+                        .data(wishlist)
+                        .build()
+        );
     }
 
-    // ✅ Clear the wishlist
-    // DELETE /api/wishlist/users/{userId}/clear
     @DeleteMapping("/users/{userId}/clear")
-    public ResponseEntity<WishlistResponseDTO> clearWishlist(@PathVariable int userId) {
-        return ResponseEntity.ok(wishlistService.clearWishlist(userId));
+    public ResponseEntity<ApiResponse<WishlistResponseDTO>> clearWishlist(@PathVariable int userId) {
+        WishlistResponseDTO wishlist = wishlistService.clearWishlist(userId);
+        return ResponseEntity.ok(
+                ApiResponse.<WishlistResponseDTO>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Wishlist cleared successfully")
+                        .data(wishlist)
+                        .build()
+        );
     }
 }
