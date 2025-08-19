@@ -12,4 +12,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     // Find all products by the category's ID
     List<Product> findByCategoryId(int categoryId);
+
+    List<Product> findByNameContainingIgnoreCase(String name);
+
+    // Sorting methods
+    List<Product> findAllByOrderByPriceAsc();
+    List<Product> findAllByOrderByPriceDesc();
+
+    List<Product> findByCategoryIdOrderByPriceAsc(int categoryId);
+    List<Product> findByCategoryIdOrderByPriceDesc(int categoryId);
 }

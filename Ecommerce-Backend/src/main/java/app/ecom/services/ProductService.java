@@ -116,5 +116,34 @@ public class ProductService {
         }
     }
 
+    public List<ProductResponseDTO> getProductsByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(ProductMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponseDTO> getAllProductsSortedByPrice(String sortDir) {
+        List<Product> products = "desc".equalsIgnoreCase(sortDir)
+                ? productRepository.findAllByOrderByPriceDesc()
+                : productRepository.findAllByOrderByPriceAsc();
+
+        return products.stream()
+                .map(ProductMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponseDTO> getProductsByCategorySortedByPrice(int categoryId, String sortDir) {
+        List<Product> products = "desc".equalsIgnoreCase(sortDir)
+                ? productRepository.findByCategoryIdOrderByPriceDesc(categoryId)
+                : productRepository.findByCategoryIdOrderByPriceAsc(categoryId);
+
+        return products.stream()
+                .map(ProductMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
+
+
 
 }

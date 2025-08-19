@@ -115,4 +115,31 @@ public class ProductController {
                         .build()
         );
     }
+    // READ products by name (case-insensitive, partial match)
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByName(@RequestParam String name) {
+        List<ProductResponseDTO> products = productService.getProductsByName(name);
+        return ResponseEntity.ok(
+                ApiResponse.<List<ProductResponseDTO>>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Products fetched successfully by name")
+                        .data(products)
+                        .build()
+        );
+    }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsSorted(
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(productService.getAllProductsSortedByPrice(sortDir));
+    }
+
+    @GetMapping("/category/{categoryId}/sorted")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsByCategorySorted(
+            @PathVariable int categoryId,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(productService.getProductsByCategorySortedByPrice(categoryId, sortDir));
+    }
+
+
 }
