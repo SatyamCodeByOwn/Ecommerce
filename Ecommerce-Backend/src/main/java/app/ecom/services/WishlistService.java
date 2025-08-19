@@ -5,7 +5,7 @@ import app.ecom.entities.Product;
 import app.ecom.entities.User;
 import app.ecom.entities.Wishlist;
 import app.ecom.entities.WishlistItem;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.dto.mappers.WishlistMapper;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.UserRepository;

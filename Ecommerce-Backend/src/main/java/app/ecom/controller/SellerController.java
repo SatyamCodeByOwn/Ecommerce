@@ -2,6 +2,7 @@ package app.ecom.controller;
 
 import app.ecom.dto.request_dto.SellerRequestDTO;
 import app.ecom.dto.response_dto.SellerResponseDTO;
+import app.ecom.entities.Seller;
 import app.ecom.services.SellerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@SecurityRequirement(name = "basicAuth")
+//@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping("/api/sellers")
 public class SellerController {
@@ -52,5 +53,15 @@ public class SellerController {
     public ResponseEntity<Void> deleteSeller(@PathVariable int id) {
         sellerService.deleteSeller(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<SellerResponseDTO> approveSeller(@PathVariable int id) {
+        return ResponseEntity.ok(sellerService.approveSeller(id));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<SellerResponseDTO> rejectSeller(@PathVariable int id) {
+        return ResponseEntity.ok(sellerService.rejectSeller(id));
     }
 }

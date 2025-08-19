@@ -5,9 +5,9 @@ import app.ecom.dto.request_dto.SellerRequestDTO;
 import app.ecom.dto.response_dto.SellerResponseDTO;
 import app.ecom.entities.Seller;
 import app.ecom.entities.User;
-import app.ecom.exceptions.FileStorageException;
-import app.ecom.exceptions.ResourceAlreadyExistsException;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.FileStorageException;
+import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -81,5 +81,25 @@ public class SellerService {
             throw new ResourceNotFoundException("Seller not found with id: " + id);
         }
         sellerRepository.deleteById(id);
+    }
+
+    public SellerResponseDTO approveSeller(int sellerId) {
+        Seller seller = sellerRepository.findById(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
+
+        seller.setApprovalStatus(Seller.ApprovalStatus.APPROVED);
+        sellerRepository.save(seller);
+
+        return SellerMapper.toDTO(seller); // mapping here
+    }
+
+    public SellerResponseDTO rejectSeller(int sellerId) {
+        Seller seller = sellerRepository.findById(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
+
+        seller.setApprovalStatus(Seller.ApprovalStatus.REJECTED);
+        sellerRepository.save(seller);
+
+        return SellerMapper.toDTO(seller); // mapping here
     }
 }

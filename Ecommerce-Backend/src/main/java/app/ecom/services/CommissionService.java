@@ -4,7 +4,7 @@ import app.ecom.dto.request_dto.CommissionRequestDTO;
 import app.ecom.dto.response_dto.CommissionResponseDTO;
 import app.ecom.entities.Commission;
 import app.ecom.entities.OrderItem;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.dto.mappers.CommissionMapper;
 import app.ecom.repositories.CommissionRepository;
 import app.ecom.repositories.OrderItemRepository;

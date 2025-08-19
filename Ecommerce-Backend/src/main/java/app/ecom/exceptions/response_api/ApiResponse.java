@@ -1,4 +1,4 @@
-package app.ecom.dto.response_api;
+package app.ecom.exceptions.response_api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

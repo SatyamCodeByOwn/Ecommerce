@@ -1,6 +1,6 @@
 package app.ecom.controller;
 
-import app.ecom.dto.request_dto.CartItemRequestDTO;
+import app.ecom.dto.request_dto.CartRequestDTO;
 import app.ecom.dto.response_dto.CartResponseDTO;
 import app.ecom.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class CartController {
     @PostMapping("/{userId}/items")
     public ResponseEntity<CartResponseDTO> addProductToCart(
             @PathVariable int userId,
-            @RequestBody CartItemRequestDTO request) {
+            @RequestBody CartRequestDTO request) {
         return ResponseEntity.ok(cartService.addProductToCart(userId, request));
     }
 

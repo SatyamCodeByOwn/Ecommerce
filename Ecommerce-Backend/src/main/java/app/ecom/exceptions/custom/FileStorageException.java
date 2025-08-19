@@ -1,4 +1,4 @@
-package app.ecom.exceptions;
+package app.ecom.exceptions.custom;
 
 public class FileStorageException extends RuntimeException {
 

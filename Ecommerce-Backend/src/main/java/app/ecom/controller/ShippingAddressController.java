@@ -35,11 +35,11 @@ public class ShippingAddressController {
 
     // READ a single shipping address by ID
     // GET /api/shipping-addresses/{id}
-    @GetMapping("/{id}")
-    public ResponseEntity<ShippingAddressResponseDTO> getShippingAddressById(@PathVariable int id) {
-        ShippingAddressResponseDTO address = shippingAddressService.getShippingAddressById(id);
-        return ResponseEntity.ok(address);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ShippingAddressResponseDTO> getShippingAddressById(@PathVariable int id) {
+//        ShippingAddressResponseDTO address = shippingAddressService.getShippingAddressById(id);
+//        return ResponseEntity.ok(address);
+//    }
 
     // UPDATE an existing shipping address
     // PUT /api/shipping-addresses/{id}
