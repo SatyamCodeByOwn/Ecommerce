@@ -14,13 +14,13 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    // ✅ Get or create a user's cart
+    //  Get or create a user's cart
     @GetMapping("/{userId}")
     public ResponseEntity<CartResponseDTO> getOrCreateCart(@PathVariable int userId) {
         return ResponseEntity.ok(cartService.getOrCreateCart(userId));
     }
 
-    // ✅ Add a product to the cart
+    //  Add a product to the cart
     @PostMapping("/{userId}/items")
     public ResponseEntity<CartResponseDTO> addProductToCart(
             @PathVariable int userId,
@@ -28,7 +28,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.addProductToCart(userId, request));
     }
 
-    // ✅ Update the quantity of a product in the cart
+    //  Update the quantity of a product in the cart
     @PutMapping("/{userId}/items/{productId}")
     public ResponseEntity<CartResponseDTO> updateCartItemQuantity(
             @PathVariable int userId,
@@ -37,7 +37,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.updateCartItemQuantity(userId, productId, quantity));
     }
 
-    // ✅ Remove a product from the cart
+    // Remove a product from the cart
     @DeleteMapping("/{userId}/items/{productId}")
     public ResponseEntity<CartResponseDTO> removeProductFromCart(
             @PathVariable int userId,
@@ -45,7 +45,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.removeProductFromCart(userId, productId));
     }
 
-    // ✅ Clear the cart
+    //  Clear the cart
     @DeleteMapping("/{userId}/clear")
     public ResponseEntity<CartResponseDTO> clearCart(@PathVariable int userId) {
         return ResponseEntity.ok(cartService.clearCart(userId));
