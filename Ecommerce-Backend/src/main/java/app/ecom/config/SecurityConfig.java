@@ -28,13 +28,13 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // ✅ Password encoder for hashing and verifying user passwords
+    //  Password encoder for hashing and verifying user passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Authentication provider that uses our CustomUserDetailsService
+    // Authentication provider that uses our CustomUserDetailsService
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -43,13 +43,13 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // ✅ Authentication manager
+    // Authentication manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // ✅ Security filter chain
+    // Security filter chain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
