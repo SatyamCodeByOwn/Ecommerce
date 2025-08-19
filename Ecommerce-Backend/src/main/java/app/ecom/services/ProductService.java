@@ -5,10 +5,13 @@ import app.ecom.dto.request_dto.ProductRequestDTO;
 import app.ecom.dto.response_dto.ProductResponseDTO;
 import app.ecom.entities.Categories;
 import app.ecom.entities.Product;
+import app.ecom.entities.Seller;
 import app.ecom.entities.User;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
+import app.ecom.exceptions.custom.SellerNotApprovedException;
 import app.ecom.repositories.CategoriesRepository;
 import app.ecom.repositories.ProductRepository;
+import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +31,17 @@ public class ProductService {
     private UserRepository userRepository;
 
     @Autowired
+    private SellerRepository sellerRepository;
+
+    @Autowired
     private CategoriesRepository categoriesRepository; // Naming convention corrected
 
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO dto) throws IOException {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + dto.getSellerId()));
+
+        validateSellerApproval(dto.getSellerId());
 
         Categories category = categoriesRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + dto.getCategoryId()));
@@ -77,6 +85,8 @@ public class ProductService {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + dto.getSellerId()));
 
+        validateSellerApproval(dto.getSellerId());
+
         Categories category = categoriesRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + dto.getCategoryId()));
 
@@ -87,10 +97,23 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(int id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product not found with id: " + id);
+    public void deleteProduct(int sellerId,int productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product not found with id: " + productId);
         }
-        productRepository.deleteById(id);
+        validateSellerApproval(sellerId);
+
+        productRepository.deleteById(productId);
     }
+
+    private void validateSellerApproval(int userId) {
+        Seller seller = sellerRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seller profile not found for userId: " + userId));
+
+        if (seller.getApprovalStatus() != Seller.ApprovalStatus.APPROVED) {
+            throw new SellerNotApprovedException("Seller is not approved to perform this operation.");
+        }
+    }
+
+
 }

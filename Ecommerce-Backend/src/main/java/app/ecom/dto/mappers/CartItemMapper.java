@@ -1,9 +1,7 @@
 package app.ecom.dto.mappers;
 
-import app.ecom.dto.request_dto.CartItemRequestDTO;
 import app.ecom.dto.response_dto.CartItemResponseDTO;
 import app.ecom.entities.CartItem;
-import app.ecom.entities.Product;
 
 public class CartItemMapper {
 

@@ -6,7 +6,7 @@ import app.ecom.dto.response_dto.ReviewResponseDTO;
 import app.ecom.entities.Product;
 import app.ecom.entities.Review;
 import app.ecom.entities.User;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.ReviewRepository;
 import app.ecom.repositories.UserRepository;

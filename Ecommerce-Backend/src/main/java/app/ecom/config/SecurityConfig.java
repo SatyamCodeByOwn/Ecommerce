@@ -104,6 +104,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/sellers").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/sellers/{id}").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/reject").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/approve").hasRole("OWNER")
+
 
                         // Shipping Address endpoints
                         .requestMatchers(HttpMethod.POST, "/api/shipping-addresses").hasRole("CUSTOMER")

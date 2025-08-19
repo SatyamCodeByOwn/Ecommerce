@@ -1,4 +1,4 @@
-package app.ecom.exceptions;
+package app.ecom.exceptions.custom;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

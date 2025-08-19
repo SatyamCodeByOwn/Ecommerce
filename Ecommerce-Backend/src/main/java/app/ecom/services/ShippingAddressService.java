@@ -5,7 +5,7 @@ import app.ecom.dto.request_dto.ShippingAddressRequestDTO;
 import app.ecom.dto.response_dto.ShippingAddressResponseDTO;
 import app.ecom.entities.ShippingAddress;
 import app.ecom.entities.User;
-import app.ecom.exceptions.ResourceNotFoundException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.repositories.ShippingAddressRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
