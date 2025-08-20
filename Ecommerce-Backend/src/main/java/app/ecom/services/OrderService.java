@@ -80,7 +80,7 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        Cart cart = cartRepository.findByUser_Id(user.getId())
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + user.getId()));
 
         // 2. Uss cart ke saare items delete karein (METHOD CALL UPDATE KIYA GAYA)
