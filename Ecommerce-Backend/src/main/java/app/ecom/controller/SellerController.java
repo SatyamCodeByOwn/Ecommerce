@@ -109,4 +109,13 @@ public class SellerController {
                         .build()
         );
     }
+
+    @Autowired
+    private SellerService revenueService;
+
+    @GetMapping("/{sellerUserId}/revenue")
+    public ResponseEntity<Double> getTotalRevenue(@PathVariable int sellerUserId) {
+        double revenue = revenueService.getTotalRevenue(sellerUserId);
+        return ResponseEntity.ok(revenue);
+    }
 }
