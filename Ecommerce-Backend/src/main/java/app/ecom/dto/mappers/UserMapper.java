@@ -14,6 +14,7 @@ public class UserMapper {
         user.setPasswordHash(passwordHash);
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setRole(role);
+        user.setActive(true);
         return user;
     }
 
@@ -24,6 +25,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setRoleName(user.getRole().getName().name());
+        dto.setActive(user.isActive());
         return dto;
     }
 

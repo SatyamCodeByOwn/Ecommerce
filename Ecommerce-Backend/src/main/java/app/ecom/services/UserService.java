@@ -8,6 +8,7 @@ import app.ecom.entities.User;
 import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.exceptions.custom.RoleNotAllowedException;
+import app.ecom.exceptions.custom.UserNotAuthorizedException;
 import app.ecom.repositories.RoleRepository;
 import app.ecom.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,16 +77,25 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO updateUser(int id, UserRequestDTO dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    public UserResponseDTO updateUser(int userId, UserRequestDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        if (user.getId() != userId) {
+            throw new UserNotAuthorizedException("You are not authorized to do this.");
+        }
 
         // Check for duplicate username/email only if they have changed
-        if (!user.getUsername().equals(dto.getUsername()) && userRepository.existsByUsername(dto.getUsername())) {
+        if (userRepository.existsByUsernameAndIdNot(dto.getUsername(), userId)) {
             throw new ResourceAlreadyExistsException("User", "username", dto.getUsername());
         }
-        if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
+
+        if (userRepository.existsByEmailAndIdNot(dto.getEmail(), userId)) {
             throw new ResourceAlreadyExistsException("User", "email", dto.getEmail());
+        }
+
+        if (dto.getRoleId()==1) {
+            throw new RoleNotAllowedException("Role OWNER is not allowed.");
         }
 
         Role role = roleRepository.findById(dto.getRoleId())
@@ -100,10 +110,20 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(int id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
+    public void deleteUser(int requesterId, int deleteUserId) {
+        User currentUser = userRepository.findById(requesterId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
+
+        User targetUser = userRepository.findById(deleteUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + deleteUserId));
+
+        // Only allow self-delete OR admin role
+        if (currentUser.getRole().getId()==1 || requesterId == deleteUserId) {
+            targetUser.setActive(false);
+            userRepository.save(targetUser);
+        } else {
+            throw new UserNotAuthorizedException("You are not authorized to deactivate this user.");
         }
-        userRepository.deleteById(id);
     }
+
 }

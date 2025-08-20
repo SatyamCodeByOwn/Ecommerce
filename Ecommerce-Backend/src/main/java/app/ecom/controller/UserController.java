@@ -59,9 +59,9 @@ public class UserController {
     }
 
     // UPDATE
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int id, @Valid @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO updatedUser = userService.updateUser(id, userRequestDTO);
+    @PutMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO updatedUser = userService.updateUser(userId, userRequestDTO);
         return ResponseEntity.ok(
                 ApiResponse.<UserResponseDTO>builder()
                         .status(HttpStatus.OK.value())
@@ -72,9 +72,9 @@ public class UserController {
     }
 
     // DELETE
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{userId}/deactivate/{deleteUserId}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int userId, @PathVariable int deleteUserId) {
+        userService.deleteUser(userId, deleteUserId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())

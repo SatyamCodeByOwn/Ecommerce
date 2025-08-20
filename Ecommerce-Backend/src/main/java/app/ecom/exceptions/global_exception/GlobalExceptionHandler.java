@@ -96,4 +96,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UserNotAuthorizedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserNotAuthorized(UserNotAuthorizedException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),   // 403
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+
 }

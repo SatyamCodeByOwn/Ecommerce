@@ -16,5 +16,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
-    boolean existsByPhoneNumber(@NotBlank(message = "Phone number is required") @Size(max = 20, message = "Phone number must not exceed 20 characters") String phoneNumber);
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByUsernameAndIdNot(String username, int id);
+
+    boolean existsByEmailAndIdNot(String email, int id);
+
 }

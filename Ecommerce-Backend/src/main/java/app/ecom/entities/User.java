@@ -41,7 +41,9 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    // ✅ Needed for Spring Security
+    @Column(nullable = false)
+    private boolean active = true;
+
     public String getPassword() {
         return this.passwordHash;
     }
