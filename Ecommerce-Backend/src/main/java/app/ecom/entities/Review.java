@@ -6,7 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "reviews")
-@Data
+@Getter // @Data ki jagah inka istemal karein
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {

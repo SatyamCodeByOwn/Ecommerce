@@ -41,7 +41,7 @@ public class CartService {
     // ✅ Get or create cart for a user
     public CartResponseDTO getOrCreateCart(int userId) {
 
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
@@ -55,7 +55,7 @@ public class CartService {
 
     // ✅ Add product to cart
     public CartResponseDTO addProductToCart(int userId, CartRequestDTO dto) {
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 
         Product product = productRepository.findById(dto.getProductId())
@@ -87,7 +87,7 @@ public class CartService {
 
     // ✅ Update product quantity
     public CartResponseDTO updateCartItemQuantity(int userId, int productId, int quantity) {
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 
         CartItem cartItem = cart.getCartItems().stream()
@@ -108,7 +108,7 @@ public class CartService {
 
     // ✅ Remove product from cart
     public CartResponseDTO removeProductFromCart(int userId, int productId) {
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 
         CartItem cartItem = cart.getCartItems().stream()
@@ -126,7 +126,7 @@ public class CartService {
 
     // ✅ Clear cart
     public CartResponseDTO clearCart(int userId) {
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for userId: " + userId));
 
         cart.getCartItems().clear();

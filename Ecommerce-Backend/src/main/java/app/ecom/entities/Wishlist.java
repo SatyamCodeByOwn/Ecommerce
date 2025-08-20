@@ -7,7 +7,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "wishlists")
-@Data
+@Getter // @Data ki jagah inka istemal karein
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Wishlist {

@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
-@Data
+@Getter // @Data ki jagah inka istemal karein
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Payment {

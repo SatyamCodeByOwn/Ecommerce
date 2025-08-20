@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "sellers")
-@Data
+@Getter // @Data ki jagah inka istemal karein
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Seller {
