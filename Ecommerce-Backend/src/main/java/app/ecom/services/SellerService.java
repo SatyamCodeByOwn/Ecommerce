@@ -8,6 +8,7 @@ import app.ecom.entities.User;
 import app.ecom.exceptions.custom.FileStorageException;
 import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
+import app.ecom.repositories.OrderItemRepository;
 import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -101,5 +102,12 @@ public class SellerService {
         sellerRepository.save(seller);
 
         return SellerMapper.toDTO(seller); // mapping here
+    }
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+    public double getTotalRevenue(int sellerUserId) {
+        Double revenue = orderItemRepository.getTotalRevenueBySeller(sellerUserId);
+        return revenue != null ? revenue : 0.0;
     }
 }

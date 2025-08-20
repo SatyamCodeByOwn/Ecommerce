@@ -1,6 +1,7 @@
 package app.ecom.exceptions.global_exception;
 
 import app.ecom.exceptions.custom.FileStorageException;
+import app.ecom.exceptions.custom.RoleNotAllowedException;
 import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.exceptions.custom.SellerNotApprovedException;
@@ -64,4 +65,14 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+
+    @ExceptionHandler(RoleNotAllowedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRoleNotAllowed(RoleNotAllowedException ex) {
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }

@@ -112,9 +112,8 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Seller profile not found for userId: " + userId));
 
         if (seller.getApprovalStatus() != Seller.ApprovalStatus.APPROVED) {
+
             throw new SellerNotApprovedException("Seller is not approved to perform this operation.");
         }
     }
-
-
 }
