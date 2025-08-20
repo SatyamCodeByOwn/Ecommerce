@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -59,4 +60,18 @@ public class CommissionController {
                         .build()
         );
     }
+
+    // READ (Total Revenue for Owner)
+    @GetMapping("/owner/revenue")
+    public ResponseEntity<ApiResponse<BigDecimal>> getOwnerRevenue() {
+        BigDecimal totalRevenue = commissionService.getOwnerRevenue();
+        return ResponseEntity.ok(
+                ApiResponse.<BigDecimal>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Total revenue fetched successfully")
+                        .data(totalRevenue)
+                        .build()
+        );
+    }
+
 }

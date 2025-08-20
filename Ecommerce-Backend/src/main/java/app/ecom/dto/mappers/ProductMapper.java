@@ -36,7 +36,7 @@ public class ProductMapper {
     }
 
     // Convert Product entity to a response DTO
-    public static ProductResponseDTO toResponseDto(Product product) {
+   /* public static ProductResponseDTO toResponseDto(Product product) {
         if (product == null) {
             return null;
         }
@@ -56,7 +56,36 @@ public class ProductMapper {
                 category != null ? category.getName().name() : null,
                 product.getImagePath()
         );
+    }*/
+
+    // Convert Product entity to a response DTO
+    public static ProductResponseDTO toResponseDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+
+        User seller = product.getSeller();
+        Categories category = product.getCategory();
+
+        ProductResponseDTO dto = new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getStock(),
+                seller != null ? seller.getId() : 0,
+                seller != null ? seller.getUsername() : null,
+                category != null ? category.getId() : 0,
+                category != null ? category.getName().name() : null,
+                product.getImagePath()
+        );
+
+        // Set stockStatus dynamically
+        dto.setStockStatus(product.getStockStatus()); // returns "Out of Stock" or "In Stock"
+
+        return dto;
     }
+
 
     public static void updateEntity(Product product, ProductRequestDTO dto, User seller, Categories category) throws IOException {
         if (dto.getName() != null) {

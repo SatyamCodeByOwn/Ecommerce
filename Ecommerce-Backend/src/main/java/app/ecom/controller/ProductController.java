@@ -6,6 +6,7 @@ import app.ecom.exceptions.response_api.ApiResponse;
 import app.ecom.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -115,4 +116,61 @@ public class ProductController {
                         .build()
         );
     }
+    // READ products by name (case-insensitive, partial match)
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByName(@RequestParam String name) {
+        List<ProductResponseDTO> products = productService.getProductsByName(name);
+        return ResponseEntity.ok(
+                ApiResponse.<List<ProductResponseDTO>>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Products fetched successfully by name")
+                        .data(products)
+                        .build()
+        );
+    }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsSorted(
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(productService.getAllProductsSortedByPrice(sortDir));
+    }
+
+    @GetMapping("/category/{categoryId}/sorted")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsByCategorySorted(
+            @PathVariable int categoryId,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(productService.getProductsByCategorySortedByPrice(categoryId, sortDir));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByPriceRange(
+            @RequestParam double minPrice,
+            @RequestParam double maxPrice) {
+        List<ProductResponseDTO> products = productService.getProductsByPriceRange(minPrice, maxPrice);
+        return ResponseEntity.ok(
+                ApiResponse.<List<ProductResponseDTO>>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Products fetched successfully by price range")
+                        .data(products)
+                        .build()
+        );
+    }
+
+    @GetMapping("/filter/sorted")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByPriceRangeSorted(
+            @RequestParam double minPrice,
+            @RequestParam double maxPrice,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        List<ProductResponseDTO> products = productService.getProductsByPriceRangeSorted(minPrice, maxPrice, sortDir);
+        return ResponseEntity.ok(
+                ApiResponse.<List<ProductResponseDTO>>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("Products fetched successfully by price range and sorted")
+                        .data(products)
+                        .build()
+        );
+    }
+
+
+
 }
