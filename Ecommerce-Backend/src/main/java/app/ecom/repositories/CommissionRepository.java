@@ -16,4 +16,7 @@ public interface CommissionRepository extends JpaRepository<Commission, Integer>
     @Query("SELECT COALESCE(SUM(c.commissionAmount), 0) FROM Commission c")
     BigDecimal findTotalRevenue();
 
+    // Check if a commission exists for a given OrderItem ID
+    boolean existsByOrderItemId(int orderItemId);
+
 }

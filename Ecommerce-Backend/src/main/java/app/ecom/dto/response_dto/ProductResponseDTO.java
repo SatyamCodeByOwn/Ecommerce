@@ -19,4 +19,10 @@ public class ProductResponseDTO {
     private int categoryId;
     private String categoryName;
     private String imagePath;
+    public String getStockStatus() {
+        return (stock == 0) ? "Out of Stock" : "In Stock";
+    }
+
+    public void setStockStatus(String stockStatus) {
+    }
 }

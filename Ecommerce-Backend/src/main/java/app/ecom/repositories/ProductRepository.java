@@ -4,6 +4,7 @@ import app.ecom.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import org.springframework.data.domain.Sort;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
@@ -21,4 +22,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByCategoryIdOrderByPriceAsc(int categoryId);
     List<Product> findByCategoryIdOrderByPriceDesc(int categoryId);
+    List<Product> findByPriceBetween(double minPrice, double maxPrice);
+    List<Product> findByPriceBetween(double minPrice, double maxPrice, Sort sort);
 }

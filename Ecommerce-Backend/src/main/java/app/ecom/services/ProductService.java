@@ -17,6 +17,7 @@ import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 
 import java.io.IOException;
 import java.util.List;
@@ -141,6 +142,37 @@ public class ProductService {
                 .map(ProductMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
+
+    public List<ProductResponseDTO> getProductsByPriceRange(double minPrice, double maxPrice) {
+        if (minPrice < 0 || maxPrice < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (minPrice > maxPrice) {
+            throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+        }
+
+        return productRepository.findByPriceBetween(minPrice, maxPrice).stream()
+                .map(ProductMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponseDTO> getProductsByPriceRangeSorted(double minPrice, double maxPrice, String sortDir) {
+        if (minPrice < 0 || maxPrice < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (minPrice > maxPrice) {
+            throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+        }
+
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by("price").descending()
+                : Sort.by("price").ascending();
+
+        return productRepository.findByPriceBetween(minPrice, maxPrice, sort).stream()
+                .map(ProductMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
 
 

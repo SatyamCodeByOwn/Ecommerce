@@ -36,4 +36,20 @@ public class Product {
 
     @Column(length = 255)
     private String imagePath;
+
+    @Transient // not stored in DB
+    private String stockStatus;
+
+
+    public void reduceStock(int quantity) {
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("Insufficient stock for product: " + this.name);
+        }
+        this.stock -= quantity;
+    }
+    // Derived property
+    public String getStockStatus() {
+        return (this.stock == 0) ? "Out of Stock" : "In Stock";
+    }
+
 }
