@@ -60,9 +60,9 @@ public class OrderController {
     }
 
     // UPDATE Status
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> updateOrderStatus(@PathVariable int id, @RequestParam String status) {
-        OrderResponseDTO updatedOrder = orderService.updateOrderStatus(id, status);
+    @PutMapping("{id}/sellers/{sellerId}/status")
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> updateOrderStatus(@PathVariable int sellerId, @PathVariable int id, @RequestParam String status) {
+        OrderResponseDTO updatedOrder = orderService.updateOrderStatus(sellerId, id, status);
         return ResponseEntity.ok(
                 ApiResponse.<OrderResponseDTO>builder()
                         .status(HttpStatus.OK.value())

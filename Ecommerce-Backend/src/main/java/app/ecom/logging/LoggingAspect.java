@@ -42,16 +42,6 @@ public class LoggingAspect {
     public void repositoryLayerPointcut() {}
 
 
-    // ## Advice Definition ##
-
-    /**
-     * Yeh ek Around advice hai jo upar diye gaye sabhi pointcuts par apply hota hai.
-     * Yeh method execution ko "wrap" karta hai taaki pehle aur baad mein logging ki ja sake.
-     *
-     * @param joinPoint method execution ka reference, jisse method ki details milti hain.
-     * @return method dwara return kiya gaya original result.
-     * @throws Throwable agar original method koi exception throw karta hai.
-     */
     @Around("controllerLayerPointcut() || serviceLayerPointcut() || repositoryLayerPointcut()")
     public Object logAroundAllLayers(ProceedingJoinPoint joinPoint) throws Throwable {
 
