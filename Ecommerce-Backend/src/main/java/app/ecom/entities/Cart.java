@@ -7,8 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "carts")
-@Getter // @Data ki jagah inka istemal karein
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 

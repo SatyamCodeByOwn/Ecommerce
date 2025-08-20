@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "commissions")
-@Getter // @Data ki jagah inka istemal karein
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Commission {
