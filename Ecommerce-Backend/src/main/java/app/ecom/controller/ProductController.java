@@ -104,10 +104,9 @@ public class ProductController {
     }
 
     // DELETE a product
-    @DeleteMapping("/seller/{sellerId}/product/{productId}")
-    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable int sellerId,
-                                                           @PathVariable int productId) {
-        productService.deleteProduct(sellerId, productId);
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable int productId) {
+        productService.deleteProduct(productId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())

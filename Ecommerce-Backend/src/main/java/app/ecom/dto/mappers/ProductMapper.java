@@ -13,10 +13,9 @@ import java.nio.file.Paths;
 
 public class ProductMapper {
 
+    private static final String PRODUCT_IMAGES = "uploads/";
 
-    private final static String PRODUCT_IMAGES = "uploads/";
-
-    // Convert DTO and entities to a Product entity
+    // Convert ProductRequestDTO to Product entity
     public static Product toEntity(ProductRequestDTO dto, User seller, Categories category) throws IOException {
         Product product = new Product();
         product.setName(dto.getName());
@@ -24,41 +23,20 @@ public class ProductMapper {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
 
-        String fileName = System.currentTimeMillis() + "_" + dto.getProductImage().getOriginalFilename();
-        Path path = Paths.get(PRODUCT_IMAGES + fileName);
-        Files.createDirectories(path.getParent());
-        Files.write(path, dto.getProductImage().getBytes());
+        if (dto.getProductImage() != null && !dto.getProductImage().isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + dto.getProductImage().getOriginalFilename();
+            Path path = Paths.get(PRODUCT_IMAGES + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, dto.getProductImage().getBytes());
+            product.setImagePath(path.toString());
+        }
 
-        product.setImagePath(path.toString());
         product.setSeller(seller);
         product.setCategory(category);
         return product;
     }
 
-    // Convert Product entity to a response DTO
-   /* public static ProductResponseDTO toResponseDto(Product product) {
-        if (product == null) {
-            return null;
-        }
-
-        User seller = product.getSeller();
-        Categories category = product.getCategory();
-
-        return new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getStock(),
-                seller != null ? seller.getId() : 0,
-                seller != null ? seller.getUsername() : null,
-                category != null ? category.getId() : 0,
-                category != null ? category.getName().name() : null,
-                product.getImagePath()
-        );
-    }*/
-
-    // Convert Product entity to a response DTO
+    // Convert Product entity to ProductResponseDTO
     public static ProductResponseDTO toResponseDto(Product product) {
         if (product == null) {
             return null;
@@ -80,9 +58,8 @@ public class ProductMapper {
                 product.getImagePath()
         );
 
-        // Set stockStatus dynamically
-        dto.setStockStatus(product.getStockStatus()); // returns "Out of Stock" or "In Stock"
 
+        dto.setStock(product.getStock());
         return dto;
     }
 
@@ -94,10 +71,10 @@ public class ProductMapper {
         if (dto.getDescription() != null) {
             product.setDescription(dto.getDescription());
         }
-        if (dto.getPrice() != 0.0) {
+        if (dto.getPrice() != null) {  // now Double in request DTO
             product.setPrice(dto.getPrice());
         }
-        if (dto.getStock() != 0) {
+        if (dto.getStock() != null) {  // now Integer in request DTO
             product.setStock(dto.getStock());
         }
         if (dto.getProductImage() != null && !dto.getProductImage().isEmpty()) {
@@ -105,7 +82,6 @@ public class ProductMapper {
             Path path = Paths.get(PRODUCT_IMAGES + fileName);
             Files.createDirectories(path.getParent());
             Files.write(path, dto.getProductImage().getBytes());
-
             product.setImagePath(path.toString());
         }
 

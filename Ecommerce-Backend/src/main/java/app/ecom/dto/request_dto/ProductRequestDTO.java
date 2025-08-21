@@ -1,5 +1,6 @@
 package app.ecom.dto.request_dto;
 
+import app.ecom.entities.Categories;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,17 +22,14 @@ public class ProductRequestDTO {
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-    private double price;
+    private Double price;   // use wrapper type for validation
 
     @NotNull(message = "Stock is required")
     @Min(value = 0, message = "Stock cannot be a negative number")
-    private int stock;
-
-    @NotNull(message = "Seller ID is required")
-    private int sellerId;
+    private Integer stock;  // use wrapper type for validation
 
     @NotNull(message = "Category ID is required")
-    private int categoryId;
+    private Integer categoryId;
 
     @NotNull(message = "Product Image is required")
     private MultipartFile productImage;
