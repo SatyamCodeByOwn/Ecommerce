@@ -105,8 +105,10 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDTO updateOrderStatus(int sellerId, int id, String status) {
-        Seller seller = sellerRepository.findById(sellerId)
+
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new EntityNotFoundException("Seller with ID " + sellerId + " does not exist."));
+
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
@@ -124,16 +126,46 @@ public class OrderService {
         }
 
         // Step 3: Agar seller authorized hai, to order ka status update karein
+        Order.OrderStatus currentStatus = order.getStatus();
+        Order.OrderStatus newStatus;
+
         try {
-            Order.OrderStatus newStatus = Order.OrderStatus.valueOf(status.toUpperCase());
-            order.setStatus(newStatus);
-            Order updatedOrder = orderRepository.save(order);
-            return OrderMapper.toDTO(updatedOrder);
+            newStatus = Order.OrderStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // Agar status invalid hai, to exception throw karein
             throw new IllegalArgumentException("Invalid order status: " + status);
         }
+
+        switch (currentStatus) {
+            case PENDING:
+                if (newStatus != Order.OrderStatus.PROCESSING && newStatus != Order.OrderStatus.CANCELLED) {
+                    throw new IllegalStateException("A PENDING order can only be moved to PROCESSING or CANCELLED status.");
+                }
+                break;
+            case PROCESSING:
+                if (newStatus != Order.OrderStatus.SHIPPED && newStatus != Order.OrderStatus.CANCELLED) {
+                    throw new IllegalStateException("A PROCESSING order can only be moved to SHIPPED or CANCELLED status.");
+                }
+                break;
+            case SHIPPED:
+                if (newStatus != Order.OrderStatus.DELIVERED) {
+                    throw new IllegalStateException("A SHIPPED order can only be moved to DELIVERED status.");
+                }
+                break;
+            case DELIVERED:
+            case CANCELLED:
+                // Delivered ya Cancelled order ka status nahi badal sakte
+                throw new IllegalStateException("A " + currentStatus + " order status cannot be changed.");
+        }
+        // --- LOGIC KHATAM ---
+
+
+        // Step 4: Agar sab kuch sahi hai, to order ka status update karein
+        order.setStatus(newStatus);
+        Order updatedOrder = orderRepository.save(order);
+        return OrderMapper.toDTO(updatedOrder);
+
     }
+
 
     @Transactional
     public void cancelOrder(int id) {

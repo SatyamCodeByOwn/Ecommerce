@@ -22,5 +22,6 @@ public class OrderRequestDTO {
     @NotEmpty(message = "Order items list cannot be empty")
     private List<@Valid OrderItemRequestDto> items;
 
+    @NotNull(message = "Shipping address ID is required")
     private Integer shippingAddressId;
 }
