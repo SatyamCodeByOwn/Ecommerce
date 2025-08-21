@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// @SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping("/api/sellers")
 public class SellerController {
@@ -22,9 +21,10 @@ public class SellerController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> createSeller(
+            @RequestParam("requesterId") int requesterId,
             @Valid @ModelAttribute SellerRequestDTO sellerRequestDTO
     ) {
-        SellerResponseDTO createdSeller = sellerService.createSeller(sellerRequestDTO);
+        SellerResponseDTO createdSeller = sellerService.createSeller(requesterId, sellerRequestDTO);
         return new ResponseEntity<>(
                 ApiResponse.<SellerResponseDTO>builder()
                         .status(HttpStatus.CREATED.value())
@@ -35,9 +35,13 @@ public class SellerController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<SellerResponseDTO>> getSellerById(@PathVariable int id) {
-        SellerResponseDTO seller = sellerService.getSellerById(id);
+
+    @GetMapping("/{sellerId}")
+    public ResponseEntity<ApiResponse<SellerResponseDTO>> getSellerById(
+            @PathVariable int sellerId,
+            @RequestParam("requesterId") int requesterId
+    ) {
+        SellerResponseDTO seller = sellerService.getSellerById(requesterId, sellerId);
         return ResponseEntity.ok(
                 ApiResponse.<SellerResponseDTO>builder()
                         .status(HttpStatus.OK.value())
@@ -46,6 +50,7 @@ public class SellerController {
                         .build()
         );
     }
+
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<SellerResponseDTO>>> getAllSellers() {
@@ -59,12 +64,13 @@ public class SellerController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{sellerId}")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> updateSeller(
-            @PathVariable int id,
+            @PathVariable int sellerId,
+            @RequestParam("requesterId") int requesterId,
             @Valid @ModelAttribute SellerRequestDTO sellerRequestDTO
     ) {
-        SellerResponseDTO updatedSeller = sellerService.updateSeller(id, sellerRequestDTO);
+        SellerResponseDTO updatedSeller = sellerService.updateSeller(requesterId, sellerId, sellerRequestDTO);
         return ResponseEntity.ok(
                 ApiResponse.<SellerResponseDTO>builder()
                         .status(HttpStatus.OK.value())
@@ -74,9 +80,13 @@ public class SellerController {
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteSeller(@PathVariable int id) {
-        sellerService.deleteSeller(id);
+
+    @DeleteMapping("/{sellerId}")
+    public ResponseEntity<ApiResponse<Void>> deleteSeller(
+            @PathVariable int sellerId,
+            @RequestParam("requesterId") int requesterId
+    ) {
+        sellerService.deleteSeller(requesterId, sellerId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())
@@ -85,6 +95,7 @@ public class SellerController {
                         .build()
         );
     }
+
 
     @PutMapping("/{id}/approve")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> approveSeller(@PathVariable int id) {

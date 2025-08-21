@@ -77,15 +77,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO updateUser(int userId, UserRequestDTO dto) {
+    public UserResponseDTO updateUser(int requesterId, int userId, UserRequestDTO dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        if (user.getId() != userId) {
-            throw new UserNotAuthorizedException("You are not authorized to do this.");
+        if (requesterId != userId) {
+            throw new UserNotAuthorizedException("You are not authorized to update another user's profile.");
         }
 
-        // Check for duplicate username/email only if they have changed
         if (userRepository.existsByUsernameAndIdNot(dto.getUsername(), userId)) {
             throw new ResourceAlreadyExistsException("User", "username", dto.getUsername());
         }
@@ -110,14 +109,13 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(int requesterId, int deleteUserId) {
+    public void deactivateUser(int requesterId, int deleteUserId) {
         User currentUser = userRepository.findById(requesterId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
 
         User targetUser = userRepository.findById(deleteUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + deleteUserId));
 
-        // Only allow self-delete OR admin role
         if (currentUser.getRole().getId()==1 || requesterId == deleteUserId) {
             targetUser.setActive(false);
             userRepository.save(targetUser);
@@ -125,5 +123,22 @@ public class UserService {
             throw new UserNotAuthorizedException("You are not authorized to deactivate this user.");
         }
     }
+
+    @Transactional
+    public void activateUser(int requesterId, int targetUserId) {
+        User currentUser = userRepository.findById(requesterId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
+
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + targetUserId));
+
+        if (currentUser.getRole().getId() == 1) {
+            targetUser.setActive(true);
+            userRepository.save(targetUser);
+        } else {
+            throw new UserNotAuthorizedException("You are not authorized to activate this user.");
+        }
+    }
+
 
 }

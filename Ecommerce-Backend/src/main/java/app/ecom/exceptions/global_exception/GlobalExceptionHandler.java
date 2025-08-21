@@ -106,5 +106,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
+    @ExceptionHandler(NotASellerException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotASellerException(NotASellerException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),   // 403
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
 
 }

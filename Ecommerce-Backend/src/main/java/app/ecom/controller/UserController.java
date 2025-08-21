@@ -18,7 +18,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // CREATE
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponseDTO>> registerUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO createdUser = userService.registerUser(userRequestDTO);
@@ -32,7 +31,6 @@ public class UserController {
         );
     }
 
-    // READ (All)
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUsers();
@@ -45,7 +43,6 @@ public class UserController {
         );
     }
 
-    // READ (Single)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getUserById(@PathVariable int id) {
         UserResponseDTO user = userService.getUserById(id);
@@ -58,10 +55,13 @@ public class UserController {
         );
     }
 
-    // UPDATE
     @PutMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO updatedUser = userService.updateUser(userId, userRequestDTO);
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
+            @PathVariable int userId,
+            @RequestParam("requesterId") int requesterId, // requester ID passed as query param
+            @Valid @RequestBody UserRequestDTO userRequestDTO
+    ) {
+        UserResponseDTO updatedUser = userService.updateUser(requesterId, userId, userRequestDTO);
         return ResponseEntity.ok(
                 ApiResponse.<UserResponseDTO>builder()
                         .status(HttpStatus.OK.value())
@@ -71,16 +71,29 @@ public class UserController {
         );
     }
 
-    // DELETE
+
     @DeleteMapping("/{userId}/deactivate/{deleteUserId}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int userId, @PathVariable int deleteUserId) {
-        userService.deleteUser(userId, deleteUserId);
+        userService.deactivateUser(userId, deleteUserId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())
-                        .message("User deleted successfully")
+                        .message("User deactivated successfully")
                         .data(null)
                         .build()
         );
     }
+
+    @PutMapping("/{userId}/activate/{targetUserId}")
+    public ResponseEntity<ApiResponse<Void>> activateUser(@PathVariable int userId, @PathVariable int targetUserId) {
+        userService.activateUser(userId, targetUserId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .status(HttpStatus.OK.value())
+                        .message("User activated successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
 }

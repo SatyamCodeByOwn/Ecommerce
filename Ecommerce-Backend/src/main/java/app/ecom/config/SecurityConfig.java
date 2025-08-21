@@ -79,7 +79,7 @@ public class SecurityConfig {
                         // Order endpoints
                         .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","SELLER","OWNER")
-                        .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasAnyRole("SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("CUSTOMER")
 
                         // OrderItem endpoints
@@ -99,11 +99,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reviews/products/{productId}").permitAll()
 
                         // Seller endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/sellers").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/sellers").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
                         .requestMatchers(HttpMethod.GET, "/api/sellers").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/sellers/{id}").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/sellers/{id}").hasAnyRole("OWNER","SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/reject").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/approve").hasRole("OWNER")
                         .requestMatchers(HttpMethod.GET, "/api/sellers/{sellerUserId}/revenue").hasRole("SELLER")

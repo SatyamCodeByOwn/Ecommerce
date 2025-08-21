@@ -94,7 +94,16 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito JUnit Jupiter (integration with JUnit 5) -->
+		<!-- JUnit Platform Launcher (required for running tests in some environments) -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<version>1.12.2</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Mockito JUnit Jupiter (integration with JUnit 5) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
@@ -114,11 +123,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-test</artifactId>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
