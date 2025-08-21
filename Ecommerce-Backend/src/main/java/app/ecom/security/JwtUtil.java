@@ -1,4 +1,4 @@
-package app.ecom.security;
+/*package app.ecom.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -39,3 +39,4 @@ public class JwtUtil {
         }
     }
 }
+*/

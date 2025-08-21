@@ -1,4 +1,4 @@
-package app.ecom.security;
+/*package app.ecom.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,5 +50,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-}
+}*/
 

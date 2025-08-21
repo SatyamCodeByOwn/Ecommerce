@@ -139,7 +139,7 @@ public class SecurityConfig {
 
 }*/
 
-package app.ecom.config;
+/*package app.ecom.config;
 
 import app.ecom.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -280,3 +280,6 @@ public class SecurityConfig {
 
 //owner:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZW1vQGVtYWlsIiwiaWF0IjoxNzU1NjgzOTcxLCJleHAiOjE3NTU2ODc1NzF9.w84UVM4t7Ea7E6wnVTO68HZ_-MR25THtnhK2IolNKzk
 //user:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbCIsImlhdCI6MTc1NTY4NjIyNSwiZXhwIjoxNzU1Njg5ODI1fQ.mhARq9NeWODnX1Y_pyovnV-d2EUxl0y3oThHodv50-Y
+
+
+ */

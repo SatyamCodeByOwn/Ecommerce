@@ -1,4 +1,4 @@
-package app.ecom.controller;
+/*package app.ecom.controller;
 
 import app.ecom.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +32,4 @@ public class AuthController {
         response.put("token", token);
         return response;
     }
-}
+}*/
