@@ -25,6 +25,7 @@ public class Seller {
     private String gstNumber;
 
     @Lob
+    @ToString.Exclude
     private byte[] panCard;
 
     @Enumerated(EnumType.STRING)

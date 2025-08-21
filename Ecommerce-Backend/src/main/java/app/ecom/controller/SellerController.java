@@ -64,7 +64,7 @@ public class SellerController {
         );
     }
 
-    @PutMapping("/{sellerId}")
+    @PutMapping(value = "/{sellerId}", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> updateSeller(
             @PathVariable int sellerId,
             @RequestParam("requesterId") int requesterId,
@@ -79,6 +79,7 @@ public class SellerController {
                         .build()
         );
     }
+
 
 
     @DeleteMapping("/{sellerId}")
