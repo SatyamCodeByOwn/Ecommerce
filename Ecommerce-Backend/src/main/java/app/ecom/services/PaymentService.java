@@ -29,6 +29,15 @@ public class PaymentService {
         Order order = orderRepository.findById(paymentRequestDto.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + paymentRequestDto.getOrderId()));
 
+        double epsilon = 0.01;
+        if (Math.abs(order.getTotalAmount() - paymentRequestDto.getAmount().doubleValue()) > epsilon) {
+            // Agar amount match nahi hota, to payment fail kar dein.
+            throw new IllegalArgumentException(
+                    "Payment amount mismatch. Order total is " + order.getTotalAmount() +
+                            " but payment amount is " + paymentRequestDto.getAmount()
+            );
+        }
+
         Payment payment = PaymentMapper.toEntity(paymentRequestDto, order);
         payment.setStatus(Payment.PaymentStatus.COMPLETED);
 
