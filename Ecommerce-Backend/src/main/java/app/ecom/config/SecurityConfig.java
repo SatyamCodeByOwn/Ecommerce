@@ -79,7 +79,7 @@ public class SecurityConfig {
                         // Order endpoints
                         .requestMatchers(HttpMethod.POST, "/api/orders/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("CUSTOMER","SELLER","OWNER")
-                        .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasAnyRole("OWNER","SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasAnyRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("CUSTOMER")
 
                         // OrderItem endpoints
@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/sellers/{id}").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/reject").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/{id}/approve").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/sellers/{sellerUserId}/revenue").hasRole("SELLER")
 
 
                         // Shipping Address endpoints

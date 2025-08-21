@@ -7,6 +7,7 @@ import app.ecom.entities.Role;
 import app.ecom.entities.User;
 import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
+import app.ecom.exceptions.custom.RoleNotAllowedException;
 import app.ecom.repositories.RoleRepository;
 import app.ecom.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,16 @@ public class UserService {
             throw new ResourceAlreadyExistsException("User", "email", dto.getEmail());
         }
 
+        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            throw new ResourceAlreadyExistsException("User", "phone number", dto.getPhoneNumber());
+        }
+
         Role role = roleRepository.findById(dto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id: " + dto.getRoleId()));
+
+        if (dto.getRoleId()==1) {
+            throw new RoleNotAllowedException("Role OWNER is not allowed for registration");
+        }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
 
