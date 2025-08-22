@@ -122,7 +122,7 @@ app.ecom
 # 5. Testing Strategy
 
 * The project focuses on primary type of testing:
-Unit Tests: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
+`Unit Tests`: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
 
 # 6. Future Enhancements & Roadmap
 
