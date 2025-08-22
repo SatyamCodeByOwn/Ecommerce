@@ -96,9 +96,9 @@ app.ecom
 
 ## User:
 
-* POST `/api/users/register Public`: Registers a new user.
+* POST `/api/users/register` Public: Registers a new user.
 * GET `/api/users/{id}` Authorized: Retrieves a user's details.
-* GET `/api/users Owner`: Retrieves a list of all users.
+* GET `/api/users` Owner: Retrieves a list of all users.
 
 ## Seller:
 
