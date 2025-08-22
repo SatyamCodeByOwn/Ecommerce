@@ -27,7 +27,8 @@ APPROVE or REJECT new seller registrations.
 Manage platform-wide categories.
 View all users, products, and orders on the platform.
 
-#3. Design & Domain Modeling
+# 3. Design & Domain Modeling
+
 **3.1. Layered Architecture**
 We have utilized a classic 3-tier architecture:
 Controller (Presentation Layer): Handles the REST API endpoints.
