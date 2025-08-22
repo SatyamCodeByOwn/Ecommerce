@@ -40,6 +40,7 @@ We have utilized a classic 3-tier architecture:
 * **Repository (Data Access Layer)**: Responsible for communicating with the database.
 
 ## 3.2. Key Design Decisions
+* **Role-Based Security** : The application uses Spring Security to protect endpoints. Access to different operations (like creating a product or approving a seller) is restricted based on user roles (CUSTOMER, SELLER, OWNER), ensuring that users can only perform actions they are authorized for.
 
 * **DTOs (Data Transfer Objects)**: The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
 
