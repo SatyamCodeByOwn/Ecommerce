@@ -117,17 +117,17 @@ While the current version serves as a functional MVP, the following features are
 
 * **`Payment Gateway Integration`** : Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
 
-* JWT Authentication: Implement JSON Web Tokens (JWT) for stateless and more secure API authentication.
+* `JWT Authentication`: Implement JSON Web Tokens (JWT) for stateless and more secure API authentication.
 
-* AI-Powered Virtual Try-On: Implement an AI/ML feature allowing users to upload their photo and visualize how fashion products (e.g., clothing, accessories) would look on them, enhancing the shopping experience.
+* `AI-Powered Virtual Try-On`: Implement an AI/ML feature allowing users to upload their photo and visualize how fashion products (e.g., clothing, accessories) would look on them, enhancing the shopping experience.
 
-* AR/VR Virtual Try-On: Implement an Augmented/Virtual Reality feature that allows users to visualize products (like apparel or furniture) in their own space in real-time using their device's camera.
+* `AR/VR Virtual Try-On`: Implement an Augmented/Virtual Reality feature that allows users to visualize products (like apparel or furniture) in their own space in real-time using their device's camera.
 
-* Admin Dashboard: Develop a simple UI for the Owner/Admin to manage users, approve sellers, and view platform analytics.
+* `Admin Dashboard`: Develop a simple UI for the Owner/Admin to manage users, approve sellers, and view platform analytics.
 
-* Discount & Coupon System: Add functionality for creating and applying discount codes to orders.
+* `Discount & Coupon System`: Add functionality for creating and applying discount codes to orders.
 
-* Product Recommendations: Implement a basic recommendation engine to suggest products to users based on their browsing history or past purchases.
+* `Product Recommendations`: Implement a basic recommendation engine to suggest products to users based on their browsing history or past purchases.
 
-* Deployment: Containerize the application using Docker and deploy it to a cloud platform like AWS or Heroku.
+* `Deployment`: Containerize the application using Docker and deploy it to a cloud platform like AWS or Heroku.
 
