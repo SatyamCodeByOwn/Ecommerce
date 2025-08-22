@@ -6,7 +6,7 @@ This is a Spring Boot-based backend application designed for a multi-role e-comm
 
 # 2. Core Features & Scope
 
-The application supports three primary roles: Customer, Seller, and Owner/Admin.
+The application supports three primary roles: Customer, Seller, and Owner.
 
 ## Customer
 
@@ -23,7 +23,7 @@ The application supports three primary roles: Customer, Seller, and Owner/Admin.
 * View orders placed for their products.
 * Update the status of orders (PENDING -> PROCESSING -> SHIPPED ->(DELIVERED/CANCELLED) ).
 
-## Owner (Admin)
+## Owner
 
 * APPROVE or REJECT new seller registrations.
 * Manage platform-wide categories.
