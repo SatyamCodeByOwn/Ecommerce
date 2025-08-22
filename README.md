@@ -102,7 +102,7 @@ app.ecom
   
 ## Order Domain:
 
-* POST   /api/orders:                                     Creates a new order (accessible to CUSTOMER role only).
+* POST   /api/orders:```                                  ```Creates a new order (accessible to CUSTOMER role only).
 * GET    /api/orders/{id}:                                Retrieves details for a specific order.
 * PUT    /api/orders/{id}/seller-by-user/{userId}/status: Updates the order status (accessible to the authentic SELLER of that order only).
 
