@@ -93,29 +93,13 @@ app.ecom
 
 ## 4.3. REST API Endpoints (CRUD Examples)
 
-Product Domain:
-Domain
-HTTP Method
-URL
-Description & Authorization
-Product
-GET
-/api/products
-Retrieves a list of all products. Can be filtered. (Public)
-Product
-GET
-/api/products/{id}
-Retrieves details for a specific product. (Public)
-Product
-POST
-/api/products
-Creates a new product. (SELLER only)
-Product
-PUT
-/api/products/{id}
-Updates an existing product. (SELLER only)
+## Product Domain:
 
-
+* GET /api/products: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
+* GET /api/products/{id}: Retrieves details for a specific product.
+* POST /api/products: Creates a new product (accessible to SELLER role only).
+* PUT /api/products/{id}: Updates an existing product (accessible to SELLER role only).
+* 
 ## Order Domain:
 
 * POST /api/orders: Creates a new order (accessible to CUSTOMER role only).
