@@ -95,16 +95,16 @@ app.ecom
 
 ## Product Domain:
 
-* GET /api/products: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
-* GET /api/products/{id}: Retrieves details for a specific product.
-* POST /api/products: Creates a new product (accessible to SELLER role only).
-* PUT /api/products/{id}: Updates an existing product (accessible to SELLER role only).
+* GET `/api/products`: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
+* GET `/api/products/{id}`: Retrieves details for a specific product.
+* POST `/api/products`: Creates a new product (accessible to SELLER role only).
+* PUT `/api/products/{id}`: Updates an existing product (accessible to SELLER role only).
   
 ## Order Domain:
 
-* POST   /api/orders:```                                  ```Creates a new order (accessible to CUSTOMER role only).
-* GET    /api/orders/{id}:```                             ```Retrieves details for a specific order.
-* PUT    /api/orders/{id}/seller-by-user/{userId}/status: Updates the order status (accessible to the authentic SELLER of that order only).
+* POST   `/api/orders`: Creates a new order (accessible to CUSTOMER role only).
+* GET    `/api/orders/{id}`: Retrieves details for a specific order.
+* PUT    `/api/orders/{id}/seller-by-user/{userId}/status`: Updates the order status (accessible to the authentic SELLER of that order only).
 
 # 5. Testing Strategy
 
