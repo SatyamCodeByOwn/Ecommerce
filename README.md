@@ -35,6 +35,17 @@ The application supports three primary roles: Customer, Seller, and Owner.
 |------------------|-------------------------------------------------------------------------------------|-------------------|
 | US1              | As a Customer, I want to register for an account so that I can place orders.        | Customer          | High
 
+
+# 2. User Stories
+
+| ID  | User Story                                                              | Role     | Priority |
+|-----|-------------------------------------------------------------------------|----------|----------|
+| US1 | As a *Customer*, I want to register for an account so that I can place orders. | Customer | High     |
+| US2 | As a *Customer*, I want to browse products so I can find what I want to buy. | Customer | High     |
+| US3 | As a *Customer*, I want to add products to a shopping cart to purchase multiple items. | Customer | High     |
+| US4 | As a *Customer*, I want to place an order from my cart to complete my purchase. | Customer | High     |
+| US5 | As a *Seller*, I want to add new products to my catalog so I can offer them for sale. | Seller   | High     |
+
 # 3. Design & Domain Modeling
 
 ## 3.1. Layered Architecture
