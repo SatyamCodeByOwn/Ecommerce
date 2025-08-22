@@ -10,11 +10,11 @@ The application supports three primary roles: Customer, Seller, and Owner/Admin.
 
 ## Customer
 
-Browse and search for products.
-Add, update, and remove products from the shopping cart.
-Place an order from the cart.
-View the status of their orders.
-Write reviews for products.
+* Browse and search for products.
+* Add, update, and remove products from the shopping cart.
+* Place an order from the cart.
+* View the status of their orders.
+* Write reviews for products.
 
 ## Seller
 
