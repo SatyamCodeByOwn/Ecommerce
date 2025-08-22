@@ -29,6 +29,9 @@ The application supports three primary roles: Customer, Seller, and Owner.
 * Manage platform-wide categories.
 * View all users, products, and orders on the platform.
 
+# 2. User Stories
+| ID               | User Story             | Role              | Priority
+
 # 3. Design & Domain Modeling
 
 ## 3.1. Layered Architecture
