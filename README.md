@@ -32,7 +32,6 @@ The application supports three primary roles: Customer, Seller, and Owner.
 # 2. User Stories
 
 | ID               | User Story                                                                          | Role              | Priority
-
 |------------------|-------------------------------------------------------------------------------------|-------------------|
 
 | US1              | As a Customer, I want to register for an account so that I can place orders.        | Customer          | High
