@@ -51,30 +51,30 @@ We have utilized a classic 3-tier architecture:
 
 ## 3.3. Core Entities
 
-User
-Role
-Seller
-Product
-Categories
-Order & OrderItem
-Payment
-Review
-Cart & CartItem
-ShippingAddress
-Wishlist & WishlistItem
-Commission
+* User
+* Role
+* Seller
+* Product
+* Categories
+* Order & OrderItem
+* Payment
+* Review
+* Cart & CartItem
+* ShippingAddress
+* Wishlist & WishlistItem
+* Commission
 
 # 4. Technical Architecture & Implementation
 
 ## 4.1. Technology Stack
 
-Framework: Spring Boot
-Language: Java
-Database: PostgreSQL (Production)
-Data Access: Spring Data JPA / Hibernate
-Security: Spring Security
-Build Tool: Maven
-Utilities: Lombok
+* Framework: Spring Boot
+* Language: Java
+* Database: PostgreSQL (Production)
+* Data Access: Spring Data JPA / Hibernate
+* Security: Spring Security
+* Build Tool: Maven
+* Utilities: Lombok
 
 ## 4.2. Project Package Layout
 
@@ -118,9 +118,9 @@ Updates an existing product. (SELLER only)
 
 ## Order Domain:
 
-POST /api/orders: Creates a new order (accessible to CUSTOMER role only).
-GET /api/orders/{id}: Retrieves details for a specific order.
-PUT /api/orders/{id}/seller-by-user/{userId}/status: Updates the order status (accessible to the authentic SELLER of that order only).
+* POST /api/orders: Creates a new order (accessible to CUSTOMER role only).
+* GET /api/orders/{id}: Retrieves details for a specific order.
+* PUT /api/orders/{id}/seller-by-user/{userId}/status: Updates the order status (accessible to the authentic SELLER of that order only).
 
 # 5. Testing Strategy
 
