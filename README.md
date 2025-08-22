@@ -70,7 +70,7 @@ We have utilized a classic 3-tier architecture:
 
 * Framework: Spring Boot
 * Language: Java
-* Database: PostgreSQL (Production)
+* Database: PostgreSQL
 * Data Access: Spring Data JPA / Hibernate
 * Security: Spring Security
 * Build Tool: Maven
