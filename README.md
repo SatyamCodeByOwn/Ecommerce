@@ -115,7 +115,7 @@ Unit Tests: The business logic within service classes like UserService and Order
 
 While the current version serves as a functional MVP, the following features are planned for future releases:
 
-* Payment Gateway Integration: Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
+* ### Payment Gateway Integration: ### Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
 
 * JWT Authentication: Implement JSON Web Tokens (JWT) for stateless and more secure API authentication.
 
