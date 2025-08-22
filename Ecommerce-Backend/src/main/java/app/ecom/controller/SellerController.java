@@ -98,7 +98,7 @@ public class SellerController {
     }
 
 
-    @PutMapping("/{id}/approve")
+    @PatchMapping("/{id}/approve")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> approveSeller(@PathVariable int id) {
         SellerResponseDTO approvedSeller = sellerService.approveSeller(id);
         return ResponseEntity.ok(
@@ -110,7 +110,7 @@ public class SellerController {
         );
     }
 
-    @PutMapping("/{id}/reject")
+    @PatchMapping("/{id}/reject")
     public ResponseEntity<ApiResponse<SellerResponseDTO>> rejectSeller(@PathVariable int id) {
         SellerResponseDTO rejectedSeller = sellerService.rejectSeller(id);
         return ResponseEntity.ok(
@@ -121,6 +121,7 @@ public class SellerController {
                         .build()
         );
     }
+
 
     @Autowired
     private SellerService revenueService;

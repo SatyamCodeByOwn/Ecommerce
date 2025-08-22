@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -41,11 +44,11 @@ class UserServiceTest {
         roleOwner = new Role(1, Role.RoleName.OWNER);
 
         requestDTO = new UserRequestDTO(
-                "testUser",                      // valid username ≤ 30 chars
-                "test@example.com",              // valid email ≤ 30 chars
-                "password123",                   // valid password ≤ 30 chars
-                "1234567890",                    // valid phone ≤ 20 chars
-                2                                // valid positive roleId
+                "testUser",
+                "test@example.com",
+                "password123",
+                "1234567890",
+                2
         );
 
         user = new User(
@@ -57,7 +60,14 @@ class UserServiceTest {
                 roleCustomer,
                 true
         );
+    }
 
+    private void mockSecurityContext(String email) {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn(email);
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(context);
     }
 
     @Test
@@ -92,7 +102,8 @@ class UserServiceTest {
 
     @Test
     void updateUser_Success() {
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        mockSecurityContext("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(userRepository.existsByUsernameAndIdNot("testUser", 1)).thenReturn(false);
         when(userRepository.existsByEmailAndIdNot("test@example.com", 1)).thenReturn(false);
         when(roleRepository.findById(2)).thenReturn(Optional.of(roleCustomer));
@@ -111,28 +122,37 @@ class UserServiceTest {
 
     @Test
     void updateUser_ShouldThrow_WhenUnauthorized() {
-        when(userRepository.findById(2)).thenReturn(Optional.of(user));
+        mockSecurityContext("test@example.com");
+        User otherUser = new User(2, "other", "test@example.com", "pass", "8888888888", roleCustomer, true);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(otherUser));
+
         assertThrows(UserNotAuthorizedException.class, () -> userService.updateUser(1, 2, requestDTO));
     }
 
     @Test
     void updateUser_ShouldThrow_WhenOwnerRoleIsUsed() {
+        mockSecurityContext("test@example.com");
         requestDTO.setRoleId(1);
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
         assertThrows(RoleNotAllowedException.class, () -> userService.updateUser(1, 1, requestDTO));
     }
 
     @Test
     void deactivateUser_Success_BySelf() {
+        mockSecurityContext("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
         userService.deactivateUser(1, 1);
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void deactivateUser_Success_ByOwner() {
+        mockSecurityContext("owner@example.com");
         User owner = new User(2, "owner", "owner@example.com", "pass", "9999999999", roleOwner, true);
-        when(userRepository.findById(2)).thenReturn(Optional.of(owner));
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(owner));
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
         userService.deactivateUser(2, 1);
@@ -141,33 +161,35 @@ class UserServiceTest {
 
     @Test
     void deactivateUser_ShouldThrow_WhenUnauthorized() {
+        mockSecurityContext("other@example.com");
         User otherUser = new User(3, "other", "other@example.com", "pass", "8888888888", roleCustomer, true);
-        when(userRepository.findById(3)).thenReturn(Optional.of(otherUser));
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("other@example.com")).thenReturn(Optional.of(otherUser));
 
         assertThrows(UserNotAuthorizedException.class, () -> userService.deactivateUser(3, 1));
     }
 
     @Test
     void activateUser_Success_ByOwner() {
-        User owner = new User(2, "owner", "owner@example.com", "pass", "9999999999", roleOwner, false);
+        mockSecurityContext("owner@example.com");
+        User owner = new User(2, "owner", "owner@example.com", "pass", "9999999999", roleOwner, true);
         user.setActive(false);
 
-        when(userRepository.findById(2)).thenReturn(Optional.of(owner));
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(owner));
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
-
         userService.activateUser(2, 1);
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void activateUser_ShouldThrow_WhenUnauthorized() {
-        User otherUser = new User(3, "other", "other@example.com", "pass", "8888888888", roleCustomer, false);
-        when(userRepository.findById(3)).thenReturn(Optional.of(otherUser));
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        mockSecurityContext("other@example.com");
+        User otherUser = new User(3, "other", "other@example.com", "pass", "8888888888", roleCustomer, true);
+
+        when(userRepository.findByEmail("other@example.com")).thenReturn(Optional.of(otherUser));
 
         assertThrows(UserNotAuthorizedException.class, () -> userService.activateUser(3, 1));
     }
+
 
     @Test
     void getAllUsers_ShouldReturnList() {
@@ -181,7 +203,8 @@ class UserServiceTest {
 
     @Test
     void getUserById_Success() {
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        mockSecurityContext("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
             mockedMapper.when(() -> UserMapper.toResponseDTO(user)).thenReturn(new UserResponseDTO());
             UserResponseDTO result = userService.getUserById(1);
@@ -191,7 +214,8 @@ class UserServiceTest {
 
     @Test
     void getUserById_ShouldThrow_WhenNotFound() {
-        when(userRepository.findById(1)).thenReturn(Optional.empty());
+        mockSecurityContext("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1));
     }
 }

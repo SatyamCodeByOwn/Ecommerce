@@ -12,6 +12,8 @@ import app.ecom.exceptions.custom.UserNotAuthorizedException;
 import app.ecom.repositories.RoleRepository;
 import app.ecom.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,20 +72,34 @@ public class UserService {
     }
 
     public UserResponseDTO getUserById(int id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
 
-        return UserMapper.toResponseDTO(user);
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        if (loggedInUser.getId() != id && loggedInUser.getRole().getId() != 1) {
+            throw new UserNotAuthorizedException("You are not authorized to view this user's details.");
+        }
+
+
+        return UserMapper.toResponseDTO(loggedInUser);
     }
+
 
     @Transactional
     public UserResponseDTO updateUser(int requesterId, int userId, UserRequestDTO dto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
 
-        if (requesterId != userId) {
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        if (loggedInUser.getId() != requesterId || requesterId != userId) {
             throw new UserNotAuthorizedException("You are not authorized to update another user's profile.");
         }
+
+        User user = loggedInUser;
 
         if (userRepository.existsByUsernameAndIdNot(dto.getUsername(), userId)) {
             throw new ResourceAlreadyExistsException("User", "username", dto.getUsername());
@@ -93,7 +109,8 @@ public class UserService {
             throw new ResourceAlreadyExistsException("User", "email", dto.getEmail());
         }
 
-        if (dto.getRoleId()==1) {
+        // Prevent assigning OWNER role
+        if (dto.getRoleId() == 1) {
             throw new RoleNotAllowedException("Role OWNER is not allowed.");
         }
 
@@ -108,37 +125,53 @@ public class UserService {
         return UserMapper.toResponseDTO(updatedUser);
     }
 
+
     @Transactional
-    public void deactivateUser(int requesterId, int deleteUserId) {
-        User currentUser = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
+    public void deactivateUser(int requesterId, int deactivateUserId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
 
-        User targetUser = userRepository.findById(deleteUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + deleteUserId));
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 
-        if (currentUser.getRole().getId()==1 || requesterId == deleteUserId) {
-            targetUser.setActive(false);
-            userRepository.save(targetUser);
-        } else {
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        // Allow only self or owner to deactivate
+        if (requesterId != deactivateUserId && loggedInUser.getRole().getId() != 1) {
             throw new UserNotAuthorizedException("You are not authorized to deactivate this user.");
         }
+
+        User targetUser = userRepository.findById(deactivateUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + deactivateUserId));
+
+        targetUser.setActive(false);
+        userRepository.save(targetUser);
     }
+
 
     @Transactional
     public void activateUser(int requesterId, int targetUserId) {
-        User currentUser = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        // Only owner can activate users
+        if (loggedInUser.getRole().getId() != 1) {
+            throw new UserNotAuthorizedException("Only the owner can activate users.");
+        }
 
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + targetUserId));
 
-        if (currentUser.getRole().getId() == 1) {
-            targetUser.setActive(true);
-            userRepository.save(targetUser);
-        } else {
-            throw new UserNotAuthorizedException("You are not authorized to activate this user.");
-        }
+        targetUser.setActive(true);
+        userRepository.save(targetUser);
     }
-
-
 }

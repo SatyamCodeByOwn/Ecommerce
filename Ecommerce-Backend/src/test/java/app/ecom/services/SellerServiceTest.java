@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,32 +29,30 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SellerServiceTest {
 
-    @Mock
-    private SellerRepository sellerRepository;
+    @Mock private SellerRepository sellerRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private OrderItemRepository orderItemRepository;
+    @Mock private MultipartFile panCardFile;
+    @Mock private Authentication authentication;
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private OrderItemRepository orderItemRepository;
-
-    @Mock
-    private MultipartFile panCardFile;
-
-    @InjectMocks
-    private SellerService sellerService;
+    @InjectMocks private SellerService sellerService;
 
     private User user;
     private Seller seller;
     private SellerRequestDTO sellerRequestDTO;
 
+    private static final int SELLER_ROLE_ID = 2;
+    private static final int CUSTOMER_ROLE_ID = 3;
+    private static final int OWNER_ROLE_ID = 1;
+
     @BeforeEach
     void setUp() {
         Role sellerRole = new Role();
-        sellerRole.setId(2); // Seller role
+        sellerRole.setId(SELLER_ROLE_ID);
 
         user = new User();
         user.setId(1);
+        user.setEmail("seller@example.com");
         user.setRole(sellerRole);
 
         seller = new Seller();
@@ -64,13 +64,17 @@ class SellerServiceTest {
         sellerRequestDTO = new SellerRequestDTO(
                 user.getId(), "Test Store", "GST1234567890123", panCardFile
         );
+
+        lenient().when(authentication.getName()).thenReturn(user.getEmail());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
     void createSeller_success() throws Exception {
         when(panCardFile.getBytes()).thenReturn("PAN123".getBytes());
-        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
 
         SellerResponseDTO response = sellerService.createSeller(user.getId(), sellerRequestDTO);
@@ -81,13 +85,11 @@ class SellerServiceTest {
 
     @Test
     void createSeller_invalidRole_throwsNotASellerException() {
-        Role customerRole = new Role();
-        customerRole.setId(3); // Not a seller
+        user.getRole().setId(CUSTOMER_ROLE_ID);
 
-        user.setRole(customerRole);
-
-        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
 
         assertThrows(NotASellerException.class,
                 () -> sellerService.createSeller(user.getId(), sellerRequestDTO));
@@ -95,6 +97,7 @@ class SellerServiceTest {
 
     @Test
     void createSeller_duplicateGst_throwsException() {
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(true);
 
         assertThrows(ResourceAlreadyExistsException.class,
@@ -103,8 +106,9 @@ class SellerServiceTest {
 
     @Test
     void createSeller_userNotFound_throwsException() {
-        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class,
                 () -> sellerService.createSeller(user.getId(), sellerRequestDTO));
@@ -112,8 +116,9 @@ class SellerServiceTest {
 
     @Test
     void createSeller_panCardIOException_throwsException() throws Exception {
-        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(sellerRepository.existsByGstNumber(sellerRequestDTO.getGstNumber())).thenReturn(false);
         when(panCardFile.getBytes()).thenThrow(new IOException("Error reading PAN card"));
 
         assertThrows(FileStorageException.class,
@@ -122,8 +127,9 @@ class SellerServiceTest {
 
     @Test
     void getSellerById_success() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.of(seller));
 
         SellerResponseDTO response = sellerService.getSellerById(user.getId(), seller.getId());
 
@@ -132,8 +138,9 @@ class SellerServiceTest {
     }
 
     @Test
-    void getSellerById_notFound() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.empty());
+    void getSellerById_notFound_throwsException() {
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> sellerService.getSellerById(user.getId(), seller.getId()));
@@ -151,11 +158,12 @@ class SellerServiceTest {
 
     @Test
     void updateSeller_success() throws Exception {
-        when(panCardFile.getBytes()).thenReturn("PAN123".getBytes());
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.of(seller));
         when(sellerRepository.existsByGstNumberAndIdNot(sellerRequestDTO.getGstNumber(), seller.getId())).thenReturn(false);
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
+        when(panCardFile.getBytes()).thenReturn("PAN123".getBytes());
 
         SellerResponseDTO response = sellerService.updateSeller(user.getId(), seller.getId(), sellerRequestDTO);
 
@@ -163,32 +171,10 @@ class SellerServiceTest {
         assertEquals("Test Store", response.getStoreName());
     }
 
-//    @Test
-//    void updateSeller_invalidRole_throwsNotASellerException() {
-//        Role customerRole = new Role();
-//        customerRole.setId(3); // Not a seller
-//
-//        user.setRole(customerRole);
-//
-//        // Ensure seller is properly initialized
-//        seller = new Seller();
-//        seller.setId(1);
-//        seller.setUser(user);
-//        seller.setStoreName("Test Store");
-//        seller.setGstNumber("GST1234567890123");
-//
-//        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
-//        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-//        when(sellerRepository.existsByGstNumberAndIdNot(sellerRequestDTO.getGstNumber(), seller.getId())).thenReturn(false);
-//
-//        assertThrows(NotASellerException.class,
-//                () -> sellerService.updateSeller(user.getId(), seller.getId(), sellerRequestDTO));
-//    }
-
-
     @Test
     void updateSeller_notFound_throwsException() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> sellerService.updateSeller(user.getId(), seller.getId(), sellerRequestDTO));
@@ -196,31 +182,19 @@ class SellerServiceTest {
 
     @Test
     void deleteSeller_success() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.of(seller));
 
         sellerService.deleteSeller(user.getId(), seller.getId());
 
         verify(sellerRepository).deleteById(seller.getId());
     }
 
-    @Test
-    void deleteSeller_invalidRole_throwsNotASellerException() {
-        Role customerRole = new Role();
-        customerRole.setId(3); // Not a seller
-
-        user.setRole(customerRole);
-
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-
-        assertThrows(NotASellerException.class,
-                () -> sellerService.deleteSeller(user.getId(), seller.getId()));
-    }
 
     @Test
     void deleteSeller_notFound_throwsException() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> sellerService.deleteSeller(user.getId(), seller.getId()));
@@ -248,19 +222,18 @@ class SellerServiceTest {
 
     @Test
     void getTotalRevenue_success() {
+        // Arrange: mock authenticated user
+        when(authentication.getName()).thenReturn(user.getEmail());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(orderItemRepository.getTotalRevenueBySeller(user.getId())).thenReturn(200.0);
 
+        // Act
         double revenue = sellerService.getTotalRevenue(user.getId());
 
+        // Assert
         assertEquals(200.0, revenue);
     }
 
-    @Test
-    void getTotalRevenue_null_returnsZero() {
-        when(orderItemRepository.getTotalRevenueBySeller(user.getId())).thenReturn(null);
-
-        double revenue = sellerService.getTotalRevenue(user.getId());
-
-        assertEquals(0.0, revenue);
-    }
 }

@@ -11,6 +11,8 @@ import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,6 +30,17 @@ public class SellerService {
 
     @Transactional
     public SellerResponseDTO createSeller(int requesterId, SellerRequestDTO dto) {
+        // Get authenticated user's email from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        // Check if requesterId matches the logged-in user's ID
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
         if (requesterId != dto.getUserId()) {
             throw new UserNotAuthorizedException("You cannot create a seller profile for another user.");
         }
@@ -52,8 +65,20 @@ public class SellerService {
         }
     }
 
+    @Transactional
     public SellerResponseDTO getSellerById(int requesterId, int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
 
         User requester = userRepository.findById(requesterId)
@@ -76,9 +101,22 @@ public class SellerService {
 
     @Transactional
     public SellerResponseDTO updateSeller(int requesterId, int sellerId, SellerRequestDTO dto) {
-        Seller seller = sellerRepository.findById(sellerId)
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email used as username in Basic Auth
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        // Check if requesterId matches the logged-in user's ID
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
 
+        // Ensure the seller belongs to the requester and the DTO is also for the same user
         if (seller.getUser().getId() != requesterId || dto.getUserId() != requesterId) {
             throw new UserNotAuthorizedException("You are not authorized to update this seller profile.");
         }
@@ -102,18 +140,24 @@ public class SellerService {
 
     @Transactional
     public void deleteSeller(int requesterId, int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
+        // Get authenticated user's email from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email used as username in Basic Auth
 
-        User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 
-        if (requester.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
-            throw new UserNotAuthorizedException("You are not authorized to delete this seller profile.");
+        // Check if requesterId matches the logged-in user's ID
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
         }
 
-        if(requester.getRole().getId()==3){
-            throw new NotASellerException("You are not a Seller");
+        Seller seller = sellerRepository.findByUserId(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
+
+        // Allow deletion only if requester is admin or owns the seller profile
+        if (loggedInUser.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to delete this seller profile.");
         }
 
         sellerRepository.deleteById(sellerId);
@@ -142,8 +186,23 @@ public class SellerService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
     public double getTotalRevenue(int sellerUserId) {
+        // Get authenticated user's email from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email used as username in Basic Auth
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        // Ensure the logged-in user is the same as the one in the path
+        if (loggedInUser.getId() != sellerUserId) {
+            throw new UserNotAuthorizedException("You are not authorized to view this revenue data.");
+        }
+
         Double revenue = orderItemRepository.getTotalRevenueBySeller(sellerUserId);
         return revenue != null ? revenue : 0.0;
     }
+
+
 }
