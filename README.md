@@ -77,7 +77,7 @@ We have utilized a classic 3-tier architecture:
 * Utilities: Lombok
 
 ## 4.2. Project Package Layout
-
+```
 app.ecom
 ├── config          // SecurityConfig, etc.
 ├── controller      // REST API Controllers
@@ -90,7 +90,7 @@ app.ecom
 ├── logging         // AOP Logging Aspect
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
-
+```
 ## 4.3. REST API Endpoints (CRUD Examples)
 
 ## Product Domain:
@@ -99,7 +99,7 @@ app.ecom
 * GET /api/products/{id}: Retrieves details for a specific product.
 * POST /api/products: Creates a new product (accessible to SELLER role only).
 * PUT /api/products/{id}: Updates an existing product (accessible to SELLER role only).
-* 
+  
 ## Order Domain:
 
 * POST /api/orders: Creates a new order (accessible to CUSTOMER role only).
