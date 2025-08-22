@@ -8,7 +8,7 @@ This is a Spring Boot-based backend application designed for a multi-role e-comm
 
 The application supports three primary roles: Customer, Seller, and Owner/Admin.
 
-# Customer
+Customer
 
 Browse and search for products.
 Add, update, and remove products from the shopping cart.
@@ -27,7 +27,7 @@ APPROVE or REJECT new seller registrations.
 Manage platform-wide categories.
 View all users, products, and orders on the platform.
 
-**3. Design & Domain Modeling**
+#3. Design & Domain Modeling
 **3.1. Layered Architecture**
 We have utilized a classic 3-tier architecture:
 Controller (Presentation Layer): Handles the REST API endpoints.
@@ -54,7 +54,7 @@ ShippingAddress
 Wishlist & WishlistItem
 Commission
 
-**4. Technical Architecture & Implementation**
+# 4. Technical Architecture & Implementation
 
 **4.1. Technology Stack**
 Framework: Spring Boot
@@ -109,11 +109,13 @@ POST /api/orders: Creates a new order (accessible to CUSTOMER role only).
 GET /api/orders/{id}: Retrieves details for a specific order.
 PUT /api/orders/{id}/seller-by-user/{userId}/status: Updates the order status (accessible to the authentic SELLER of that order only).
 
-**5. Testing Strategy**
+# 5. Testing Strategy
+
 The project focuses on primary type of testing:
 Unit Tests: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
 
-**6. Future Enhancements & Roadmap**
+# 6. Future Enhancements & Roadmap
+
 While the current version serves as a functional MVP, the following features are planned for future releases:
 
 Payment Gateway Integration: Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
