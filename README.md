@@ -38,6 +38,7 @@ The application supports three primary roles: Customer, Seller, and Owner.
 | US3 | As a *Customer*, I want to add products to a shopping cart to purchase multiple items. | Customer | High     |
 | US4 | As a *Customer*, I want to place an order from my cart to complete my purchase. | Customer | High     |
 | US5 | As a *Seller*, I want to add new products to my catalog so I can offer them for sale. | Seller   | High     |
+| US6 | As an *Owner*, I want to review new seller applications so I can approve or reject them. | Owner | Medium
 
 # 4. Design & Domain Modeling
 
