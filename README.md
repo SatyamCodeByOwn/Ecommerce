@@ -94,6 +94,18 @@ app.ecom
 ```
 ## 4.3. REST API Endpoints (CRUD Examples)
 
+## User:
+
+* POST `/api/users/register Public`: Registers a new user.
+* GET `/api/users/{id}` Authorized: Retrieves a user's details.
+* GET `/api/users Owner`: Retrieves a list of all users.
+
+## Seller:
+
+* POST `/api/sellers/register` Customer: Applies to become a seller.
+* PUT `/api/sellers/{id}/approve` Owner: Approves a seller's registration.
+* PUT `/api/sellers/{id}/reject` Owner: Rejects a seller's registration.
+
 ## Product Domain:
 
 * GET `/api/products`: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
