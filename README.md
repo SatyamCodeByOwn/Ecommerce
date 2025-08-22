@@ -1,4 +1,4 @@
-**E-Commerce Platform Backend - Project Documentation**
+#E-Commerce Platform Backend - Project Documentation
 **1. Project Overview**
 This is a Spring Boot-based backend application designed for a multi-role e-commerce platform. Its design is based on a layered architecture, where the responsibility of each component is clearly defined. This project serves as an MVP (Minimum Viable Product) that covers all the essential features of an e-commerce system, such as user management, product catalog, order processing, and payments.
 
