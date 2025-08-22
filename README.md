@@ -29,14 +29,7 @@ The application supports three primary roles: Customer, Seller, and Owner.
 * Manage platform-wide categories.
 * View all users, products, and orders on the platform.
 
-# 2. User Stories
-
-| ID               | User Story                                                                          | Role              | Priority
-|------------------|-------------------------------------------------------------------------------------|-------------------|
-| US1              | As a Customer, I want to register for an account so that I can place orders.        | Customer          | High
-
-
-# 2. User Stories
+# 3. User Stories
 
 | ID  | User Story                                                              | Role     | Priority |
 |-----|-------------------------------------------------------------------------|----------|----------|
@@ -46,9 +39,9 @@ The application supports three primary roles: Customer, Seller, and Owner.
 | US4 | As a *Customer*, I want to place an order from my cart to complete my purchase. | Customer | High     |
 | US5 | As a *Seller*, I want to add new products to my catalog so I can offer them for sale. | Seller   | High     |
 
-# 3. Design & Domain Modeling
+# 4. Design & Domain Modeling
 
-## 3.1. Layered Architecture
+## 4.1. Layered Architecture
 
 We have utilized a classic 3-tier architecture:
 
@@ -56,7 +49,7 @@ We have utilized a classic 3-tier architecture:
 * **Service (Business Logic Layer)**: Implements all business rules, validation, and logic.
 * **Repository (Data Access Layer)**: Responsible for communicating with the database.
 
-## 3.2. Key Design Decisions
+## 4.2. Key Design Decisions
 * **Role-Based Security** : The application uses Spring Security to protect endpoints. Access to different operations (like creating a product or approving a seller) is restricted based on user roles (CUSTOMER, SELLER, OWNER), ensuring that users can only perform actions they are authorized for.
 
 * **DTOs (Data Transfer Objects)**: The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
@@ -67,7 +60,7 @@ We have utilized a classic 3-tier architecture:
 
 * **Logging with AOP**: We use Spring AOP (Aspect-Oriented Programming) to implement logging as a cross-cutting concern. A loggingAspect  intercepts method calls across different layers (Controllers, Services, Repositories) to log entry, exit, and execution time without cluttering the business logic.
 
-## 3.3. Core Entities
+## 4.3. Core Entities
 
 * User
 * Role
@@ -82,9 +75,9 @@ We have utilized a classic 3-tier architecture:
 * Wishlist & WishlistItem
 * Commission
 
-# 4. Technical Architecture & Implementation
+# 5. Technical Architecture & Implementation
 
-## 4.1. Technology Stack
+## 5.1. Technology Stack
 
 * **Framework**: Spring Boot
 * **Language**: Java
@@ -94,7 +87,7 @@ We have utilized a classic 3-tier architecture:
 * **Build Tool**: Maven
 * **Utilities**: Lombok
 
-## 4.2. Project Package Layout
+## 5.2. Project Package Layout
 ```
 app.ecom
 ├── config          // SecurityConfig, etc.
@@ -109,7 +102,7 @@ app.ecom
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
 ```
-## 4.3. REST API Endpoints (CRUD Examples)
+## 5.3. REST API Endpoints (CRUD Examples)
 
 ## User:
 
@@ -136,12 +129,12 @@ app.ecom
 * GET    `/api/orders/{id}`: Retrieves details for a specific order.
 * PUT    `/api/orders/{id}/seller-by-user/{userId}/status`: Updates the order status (accessible to the authentic SELLER of that order only).
 
-# 5. Testing Strategy
+# 6. Testing Strategy
 
 * The project focuses on primary type of testing:
 `Unit Tests`: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
 
-# 6. Future Enhancements & Roadmap
+# 7. Future Enhancements & Roadmap
 
 While the current version serves as a functional MVP, the following features are planned for future releases:
 
