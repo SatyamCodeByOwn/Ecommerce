@@ -35,19 +35,19 @@ The application supports three primary roles: Customer, Seller, and Owner/Admin.
 
 We have utilized a classic 3-tier architecture:
 
-* Controller (Presentation Layer): Handles the REST API endpoints.
-* Service (Business Logic Layer): Implements all business rules, validation, and logic.
-* Repository (Data Access Layer): Responsible for communicating with the database.
+* **Controller (Presentation Layer)**: Handles the REST API endpoints.
+* **Service (Business Logic Layer)**: Implements all business rules, validation, and logic.
+* **Repository (Data Access Layer)**: Responsible for communicating with the database.
 
 ## 3.2. Key Design Decisions
 
-* DTOs (Data Transfer Objects): The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
+* **DTOs (Data Transfer Objects)**: The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
 
-* Transactional Services: All methods in the service layer (@Service) are marked as @Transactional to maintain data integrity. If any operation fails, the entire transaction is rolled back.
+* **Transactional Services**: All methods in the service layer (@Service) are marked as @Transactional to maintain data integrity. If any operation fails, the entire transaction is rolled back.
 
-* Global Exception Handling: A centralized exception handler using @RestControllerAdvice has been implemented to send consistent JSON responses for all errors.
+* **Global Exception Handling**: A centralized exception handler using @RestControllerAdvice has been implemented to send consistent JSON responses for all errors.
 
-* Logging with AOP: We use Spring AOP (Aspect-Oriented Programming) to implement logging as a cross-cutting concern. A loggingAspect  intercepts method calls across different layers (Controllers, Services, Repositories) to log entry, exit, and execution time without cluttering the business logic.
+* **Logging with AOP**: We use Spring AOP (Aspect-Oriented Programming) to implement logging as a cross-cutting concern. A loggingAspect  intercepts method calls across different layers (Controllers, Services, Repositories) to log entry, exit, and execution time without cluttering the business logic.
 
 ## 3.3. Core Entities
 
@@ -68,13 +68,13 @@ We have utilized a classic 3-tier architecture:
 
 ## 4.1. Technology Stack
 
-* Framework: Spring Boot
-* Language: Java
-* Database: PostgreSQL
-* Data Access: Spring Data JPA / Hibernate
-* Security: Spring Security
-* Build Tool: Maven
-* Utilities: Lombok
+* **Framework**: Spring Boot
+* **Language**: Java
+* **Database**: PostgreSQL
+* **Data Access**: Spring Data JPA / Hibernate
+* **Security**: Spring Security
+* **Build Tool**: Maven
+* **Utilities**: Lombok
 
 ## 4.2. Project Package Layout
 ```
