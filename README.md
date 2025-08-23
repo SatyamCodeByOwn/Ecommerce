@@ -130,7 +130,7 @@ Repository (Data Access) → Database operations via Spring Data JPA
 
 
 5.2 Package Layout
-
+```
 app.ecom
 ├── config          // SecurityConfig, etc.
 ├── controller      // REST API Controllers
@@ -143,7 +143,7 @@ app.ecom
 ├── logging         // AOP Logging Aspect
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
-
+```
 5.3 REST Endpoints (Sample)
 
 ## User:
