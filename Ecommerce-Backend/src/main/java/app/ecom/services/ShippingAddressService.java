@@ -38,11 +38,17 @@ public class ShippingAddressService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        return shippingAddressRepository.findByUser(user)
-                .stream()
+        List<ShippingAddress> addresses = shippingAddressRepository.findByUser(user);
+
+        if (addresses == null || addresses.isEmpty()) {
+            throw new ResourceNotFoundException("No shipping addresses found for user with id: " + userId);
+        }
+
+        return addresses.stream()
                 .map(ShippingAddressMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
 
     public ShippingAddressResponseDTO getShippingAddressById(int id) {
         ShippingAddress address = shippingAddressRepository.findById(id)

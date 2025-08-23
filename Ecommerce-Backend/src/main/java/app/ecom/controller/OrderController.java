@@ -74,12 +74,12 @@ public class OrderController {
 
     // DELETE (Cancel)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable int id) {
-        orderService.cancelOrder(id);
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable int id) {
+        orderService.deleteOrder(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())
-                        .message("Order cancelled successfully")
+                        .message("Order deleted successfully")
                         .data(null)
                         .build()
         );

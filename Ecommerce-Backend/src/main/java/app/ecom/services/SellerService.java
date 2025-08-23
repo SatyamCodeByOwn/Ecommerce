@@ -11,6 +11,8 @@ import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,10 +28,22 @@ public class SellerService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+    }
+
     @Transactional
     public SellerResponseDTO createSeller(int requesterId, SellerRequestDTO dto) {
-        if (requesterId != dto.getUserId()) {
-            throw new UserNotAuthorizedException("You cannot create a seller profile for another user.");
+        User loggedInUser = getAuthenticatedUser();
+
+        if (loggedInUser.getId() != requesterId || requesterId != dto.getUserId()) {
+            throw new UserNotAuthorizedException("You are not authorized to create this seller profile.");
         }
 
         if (sellerRepository.existsByGstNumber(dto.getGstNumber())) {
@@ -52,20 +66,23 @@ public class SellerService {
         }
     }
 
+    @Transactional
     public SellerResponseDTO getSellerById(int requesterId, int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
+        User loggedInUser = getAuthenticatedUser();
+
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
 
-        User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
-
-        if (requester.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
+        if (loggedInUser.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
             throw new UserNotAuthorizedException("You are not authorized to view this seller's data.");
         }
 
         return SellerMapper.toDTO(seller);
     }
-
 
     public List<SellerResponseDTO> getAllSellers() {
         return sellerRepository.findAll()
@@ -76,7 +93,13 @@ public class SellerService {
 
     @Transactional
     public SellerResponseDTO updateSeller(int requesterId, int sellerId, SellerRequestDTO dto) {
-        Seller seller = sellerRepository.findById(sellerId)
+        User loggedInUser = getAuthenticatedUser();
+
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
+        }
+
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
 
         if (seller.getUser().getId() != requesterId || dto.getUserId() != requesterId) {
@@ -86,7 +109,7 @@ public class SellerService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
 
-        if (sellerRepository.existsByGstNumberAndIdNot(dto.getGstNumber(),sellerId)) {
+        if (sellerRepository.existsByGstNumberAndIdNot(dto.getGstNumber(), sellerId)) {
             throw new ResourceAlreadyExistsException("Seller", "GST Number", dto.getGstNumber());
         }
 
@@ -99,50 +122,53 @@ public class SellerService {
         }
     }
 
-
     @Transactional
     public void deleteSeller(int requesterId, int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
+        User loggedInUser = getAuthenticatedUser();
 
-        User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requesterId));
-
-        if (requester.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
-            throw new UserNotAuthorizedException("You are not authorized to delete this seller profile.");
+        if (loggedInUser.getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
         }
 
-        if(requester.getRole().getId()==3){
-            throw new NotASellerException("You are not a Seller");
+        Seller seller = sellerRepository.findByUserId(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + sellerId));
+
+        if (loggedInUser.getRole().getId() != 1 && seller.getUser().getId() != requesterId) {
+            throw new UserNotAuthorizedException("You are not authorized to delete this seller profile.");
         }
 
         sellerRepository.deleteById(sellerId);
     }
 
-
+    @Transactional
     public SellerResponseDTO approveSeller(int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
 
         seller.setApprovalStatus(Seller.ApprovalStatus.APPROVED);
         sellerRepository.save(seller);
 
-        return SellerMapper.toDTO(seller); // mapping here
+        return SellerMapper.toDTO(seller);
     }
 
+    @Transactional
     public SellerResponseDTO rejectSeller(int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
 
         seller.setApprovalStatus(Seller.ApprovalStatus.REJECTED);
         sellerRepository.save(seller);
 
-        return SellerMapper.toDTO(seller); // mapping here
+        return SellerMapper.toDTO(seller);
     }
 
-    @Autowired
-    private OrderItemRepository orderItemRepository;
     public double getTotalRevenue(int sellerUserId) {
+        User loggedInUser = getAuthenticatedUser();
+
+        if (loggedInUser.getId() != sellerUserId) {
+            throw new UserNotAuthorizedException("You are not authorized to view this revenue data.");
+        }
+
         Double revenue = orderItemRepository.getTotalRevenueBySeller(sellerUserId);
         return revenue != null ? revenue : 0.0;
     }

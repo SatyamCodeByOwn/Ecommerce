@@ -45,8 +45,14 @@ public class ReviewService {
 
     public List<ReviewResponseDTO> getReviewsByProductId(int productId) {
         List<Review> reviews = reviewRepository.findByProductId(productId);
+
+        if (reviews == null || reviews.isEmpty()) {
+            throw new ResourceNotFoundException("No reviews found for product with ID: " + productId);
+        }
+
         return reviews.stream()
                 .map(ReviewMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
 }

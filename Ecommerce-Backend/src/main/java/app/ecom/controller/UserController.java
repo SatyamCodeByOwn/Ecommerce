@@ -58,7 +58,7 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
             @PathVariable int userId,
-            @RequestParam("requesterId") int requesterId, // requester ID passed as query param
+            @RequestParam("requesterId") int requesterId,
             @Valid @RequestBody UserRequestDTO userRequestDTO
     ) {
         UserResponseDTO updatedUser = userService.updateUser(requesterId, userId, userRequestDTO);
@@ -72,9 +72,9 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/{userId}/deactivate/{deleteUserId}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable int userId, @PathVariable int deleteUserId) {
-        userService.deactivateUser(userId, deleteUserId);
+    @PatchMapping("/{userId}/deactivate/{targetUserId}")
+    public ResponseEntity<ApiResponse<Void>> deactivateUser(@PathVariable int userId, @PathVariable int targetUserId) {
+        userService.deactivateUser(userId, targetUserId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())
@@ -84,9 +84,9 @@ public class UserController {
         );
     }
 
-    @PutMapping("/{userId}/activate/{targetUserId}")
-    public ResponseEntity<ApiResponse<Void>> activateUser(@PathVariable int userId, @PathVariable int targetUserId) {
-        userService.activateUser(userId, targetUserId);
+    @PatchMapping("/{requesterId}/activate/{targetUserId}")
+    public ResponseEntity<ApiResponse<Void>> activateUser(@PathVariable int requesterId, @PathVariable int targetUserId) {
+        userService.activateUser(requesterId, targetUserId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .status(HttpStatus.OK.value())

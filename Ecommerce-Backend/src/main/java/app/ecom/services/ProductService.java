@@ -10,12 +10,15 @@ import app.ecom.entities.Seller;
 import app.ecom.entities.User;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.exceptions.custom.SellerNotApprovedException;
+import app.ecom.exceptions.custom.UserNotAuthorizedException;
 import app.ecom.repositories.CategoriesRepository;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.SellerRepository;
 import app.ecom.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort;
 
@@ -43,6 +46,18 @@ public class ProductService {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + dto.getSellerId()));
 
+        // Step 2: Get logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+
+
+        User loggedInSeller = userRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
+
+        // Step 3: Ensure sellerId in request matches logged-in user
+        if (loggedInSeller.getId() != dto.getSellerId()) {
+            throw new UserNotAuthorizedException("Request sellerId does not match logged-in user");
+        }
         validateSellerApproval(dto.getSellerId());
 
         Categories category = categoriesRepository.findById(dto.getCategoryId())
@@ -79,29 +94,65 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+
     @Transactional
     public ProductResponseDTO updateProduct(int id, ProductRequestDTO dto) throws IOException {
+        // Step 1: Find product
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
-        User seller = userRepository.findById(dto.getSellerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Seller not found with id: " + dto.getSellerId()));
+        // Step 2: Get logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
 
+
+        User loggedInSeller = userRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
+
+        // Step 3: Ensure sellerId in request matches logged-in user
+        if (loggedInSeller.getId() != dto.getSellerId()) {
+            throw new UserNotAuthorizedException("Request sellerId does not match logged-in user");
+        }
+
+        // Step 4: Ensure logged-in user actually owns this product
+        if (product.getSeller() == null || product.getSeller().getId()!=loggedInSeller.getId()) {
+            throw new UserNotAuthorizedException("You are not allowed to update this product");
+        }
+
+        // Step 5: Validate seller approval
         validateSellerApproval(dto.getSellerId());
 
+        // Step 6: Get category
         Categories category = categoriesRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + dto.getCategoryId()));
 
-        ProductMapper.updateEntity(product, dto, seller, category); // This method is now available
-        Product updatedProduct = productRepository.save(product);
+        // Step 7: Update entity
+        ProductMapper.updateEntity(product, dto, loggedInSeller, category);
 
+        // Step 8: Save and return
+        Product updatedProduct = productRepository.save(product);
         return ProductMapper.toResponseDto(updatedProduct);
     }
 
+
     @Transactional
     public void deleteProduct(int sellerId,int productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException("Product not found with id: " + productId);
+        // Step 1: Find product
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+        User loggedInSeller = userRepository.findByEmail(loggedInUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
+
+        // Step 3: Ensure sellerId in request matches logged-in user
+        if (loggedInSeller.getId() != sellerId) {
+            throw new UserNotAuthorizedException("Request sellerId does not match logged-in user");
+        }
+
+        // Step 4: Ensure logged-in user actually owns this product
+        if (product.getSeller() == null || product.getSeller().getId()!=loggedInSeller.getId()) {
+            throw new UserNotAuthorizedException("You are not allowed to delete this product");
         }
         validateSellerApproval(sellerId);
 

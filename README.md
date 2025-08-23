@@ -1,67 +1,104 @@
-# E-Commerce Platform Backend - Project Documentation
+# 🛒 E-Commerce Platform Backend
 
-# 1. Project Overview
+Spring Boot | Java | PostgreSQL | Secure Multi-Role E-Commerce System
 
-This is a Spring Boot-based backend application designed for a multi-role e-commerce platform. Its design is based on a layered architecture, where the responsibility of each component is clearly defined. This project serves as an MVP (Minimum Viable Product) that covers all the essential features of an e-commerce system, such as user management, product catalog, order processing, and payments.
 
-# 2. Core Features & Scope
 
-The application supports three primary roles: Customer, Seller, and Owner.
 
-## Customer
+
+
+
+
+---
+
+# 📌 1. Project Overview
+
+This is a Spring Boot-based backend for a multi-role e-commerce platform, built on a layered architecture (Controller → Service → Repository).
+The project is designed as an MVP (Minimum Viable Product) and covers core features like:
+
+✅ User Management
+✅ Product Catalog
+✅ Order Processing
+✅ Secure Payments (future)
+
+
+---
+
+# 🚀 2. Core Features & Scope
+
+The platform supports three roles:
+
+👤 Customer
 
 * Browse and search for products.
-* Add, update, and remove products from the shopping cart.
-* Place an order from the cart.
-* View the status of their orders.
+* Manage shopping cart.
+* Place orders & track status
 * Write reviews for products.
 
-## Seller
 
-* Register on the platform (subject to approval).
-* Manage (create, read, update, delete) their own products.
+
+🏪 Seller
+
+* Register (approval required)
+* Track orders placed for their items
 * View orders placed for their products.
 * Update the status of orders (PENDING -> PROCESSING -> SHIPPED ->(DELIVERED/CANCELLED) ).
 
-## Owner
+
+👑 Owner (Admin)
 
 * APPROVE or REJECT new seller registrations.
 * Manage platform-wide categories.
-* View all users, products, and orders on the platform.
+*View/manage all users, products & orders
 
-# 3. User Stories
+
+
+
+
+---
+
+# 📖 3. User Stories
+
+ID User Story Role Priority
 
 | ID  | User Story                                                              | Role     | Priority |
 |-----|-------------------------------------------------------------------------|----------|----------|
-| US1 | As a *Customer*, I want to register for an account so that I can place orders. | Customer | High     |
-| US2 | As a *Customer*, I want to browse products so I can find what I want to buy. | Customer | High     |
-| US3 | As a *Customer*, I want to add products to a shopping cart to purchase multiple items. | Customer | High     |
-| US4 | As a *Customer*, I want to place an order from my cart to complete my purchase. | Customer | High     |
-| US5 | As a *Seller*, I want to add new products to my catalog so I can offer them for sale. | Seller   | High     |
-| US6 | As an *Owner*, I want to review new seller applications so I can approve or reject them. | Owner | Medium
+| US1 | Register for an account to place orders. | Customer | High     |
+| US2 | Browse products before purchase. | Customer | High     |
+| US3 | Add products to cart Customer. | Customer | High     |
+| US4 | Place an order from the cart Customer. | Customer | High     |
+| US5 | Add products to catalog Seller. | Seller   | High     |
+| US6 | Approve/reject seller applications. | Owner | Medium
 
-# 4. Design & Domain Modeling
 
-## 4.1. Layered Architecture
 
-We have utilized a classic 3-tier architecture:
+---
 
-* **Controller (Presentation Layer)**: Handles the REST API endpoints.
-* **Service (Business Logic Layer)**: Implements all business rules, validation, and logic.
-* **Repository (Data Access Layer)**: Responsible for communicating with the database.
+# 🏗️ 4. Design & Domain Modeling
 
-## 4.2. Key Design Decisions
-* **Role-Based Security** : The application uses Spring Security to protect endpoints. Access to different operations (like creating a product or approving a seller) is restricted based on user roles (CUSTOMER, SELLER, OWNER), ensuring that users can only perform actions they are authorized for.
+## 4.1 Architecture
 
-* **DTOs (Data Transfer Objects)**: The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
+* Controller (API Layer) → REST endpoints
 
-* **Transactional Services**: All methods in the service layer (@Service) are marked as @Transactional to maintain data integrity. If any operation fails, the entire transaction is rolled back.
+* Service (Business Logic) → Validations, rules, transactions
 
-* **Global Exception Handling**: A centralized exception handler using @RestControllerAdvice has been implemented to send consistent JSON responses for all errors.
+* Repository (Data Access) → Database operations via Spring Data JPA
 
-* **Logging with AOP**: We use Spring AOP (Aspect-Oriented Programming) to implement logging as a cross-cutting concern. A loggingAspect  intercepts method calls across different layers (Controllers, Services, Repositories) to log entry, exit, and execution time without cluttering the business logic.
 
-## 4.3. Core Entities
+## 4.2 Key Design Choices
+
+🔒 Role-Based Security with Spring Security
+
+📦 DTOs to protect entities and structure responses
+
+🔄 @Transactional Services for data consistency
+
+⚠️ Global Exception Handling via @RestControllerAdvice
+
+📜 AOP Logging for method tracing & performance tracking
+
+
+## 4.3 Core Entities
 
 * User
 * Role
@@ -76,9 +113,12 @@ We have utilized a classic 3-tier architecture:
 * Wishlist & WishlistItem
 * Commission
 
-# 5. Technical Architecture & Implementation
 
-## 5.1. Technology Stack
+---
+
+# 🛠️ 5. Technical Architecture
+
+## 5.1 Technology Stack
 
 * **Framework**: Spring Boot
 * **Language**: Java
@@ -88,7 +128,8 @@ We have utilized a classic 3-tier architecture:
 * **Build Tool**: Maven
 * **Utilities**: Lombok
 
-## 5.2. Project Package Layout
+
+## 5.2 Package Layout
 ```
 app.ecom
 ├── config          // SecurityConfig, etc.
@@ -103,7 +144,7 @@ app.ecom
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
 ```
-## 5.3. REST API Endpoints (CRUD Examples)
+## 5.3 REST Endpoints (Sample)
 
 ## User:
 
@@ -130,28 +171,34 @@ app.ecom
 * GET    `/api/orders/{id}`: Retrieves details for a specific order.
 * PUT    `/api/orders/{id}/seller-by-user/{userId}/status`: Updates the order status (accessible to the authentic SELLER of that order only).
 
-# 6. Testing Strategy
 
-* The project focuses on primary type of testing:
-`Unit Tests`: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
 
-# 7. Future Enhancements & Roadmap
+---
 
-While the current version serves as a functional MVP, the following features are planned for future releases:
+# 🧪 6. Testing Strategy
 
-* **`Payment Gateway Integration`** : Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
+* Unit Tests with JUnit + Mockito
 
-* `JWT Authentication`: Implement JSON Web Tokens (JWT) for stateless and more secure API authentication.
+* Service layer tested in isolation (mock repositories)
 
-* `AI-Powered Virtual Try-On`: Implement an AI/ML feature allowing users to upload their photo and visualize how fashion products (e.g., clothing, accessories) would look on them, enhancing the shopping experience.
+* Ensures correctness of business logic without DB dependency
 
-* `AR/VR Virtual Try-On`: Implement an Augmented/Virtual Reality feature that allows users to visualize products (like apparel or furniture) in their own space in real-time using their device's camera.
 
-* `Admin Dashboard`: Develop a simple UI for the Owner/Admin to manage users, approve sellers, and view platform analytics.
 
-* `Discount & Coupon System`: Add functionality for creating and applying discount codes to orders.
+---
 
-* `Product Recommendations`: Implement a basic recommendation engine to suggest products to users based on their browsing history or past purchases.
+# 🌟 7. Future Enhancements
 
-* `Deployment`: Containerize the application using Docker and deploy it to a cloud platform like AWS or Heroku.
+* 💳 Payment Gateway Integration (Stripe, Razorpay)
 
+* 🔑 JWT Authentication for stateless sessions
+
+* 🤖 AI-Powered Recommendations & Virtual Try-On
+
+* 🕶️ AR/VR Support for immersive shopping
+
+* 📊 Admin Dashboard (analytics, approvals, insights)
+
+* 🎟️ Discount & Coupon System
+
+* 🐳 Dockerized Deployment (AWS / Heroku)

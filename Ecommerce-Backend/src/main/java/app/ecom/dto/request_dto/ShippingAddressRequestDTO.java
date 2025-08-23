@@ -35,6 +35,10 @@ public class ShippingAddressRequestDTO {
     private String country;
 
     @NotBlank(message = "Phone number is required")
-    @Size(max = 20, message = "Phone number must not exceed 20 characters")
+    @Pattern(
+            regexp = "^[789]\\d{9}$",
+            message = "Invalid Phone number"
+    )
     private String phoneNumber;
+
 }

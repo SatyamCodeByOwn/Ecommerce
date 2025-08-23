@@ -5,9 +5,8 @@ import app.ecom.dto.request_dto.OrderRequestDTO;
 import app.ecom.dto.request_dto.OrderItemRequestDto;
 import app.ecom.dto.response_dto.OrderResponseDTO;
 import app.ecom.entities.*;
-import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
+import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.exceptions.custom.SellerNotAuthorizedException;
-import app.ecom.exceptions.custom.UserNotAuthorizedException;
 import app.ecom.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,26 +28,31 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final ShippingAddressRepository shippingAddressRepository;
     private final OrderItemService orderItemService;
-    private final CartRepository cartRepository; // <-- YEH ADD KAREIN
+    private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final SellerRepository sellerRepository;
 
+    private User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
+    private boolean isOwnerOrSelf(User loggedInUser, int targetUserId) {
+        return loggedInUser.getId() == targetUserId || loggedInUser.getRole().getId() == 1;
+    }
+
+    private boolean isOwnerOrSelf(User loggedInUser, User resourceOwner) {
+        return loggedInUser.getId() == resourceOwner.getId() || loggedInUser.getRole().getId() == 1;
+    }
+
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedUsername = authentication.getName();
-
-        // Fetch the user from DB using the authenticated username
-        User authenticatedUser = userRepository.findByEmail(authenticatedUsername)
-                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
-
-        // Check if the authenticated user is trying to place an order for themselves
-
-        if (!Objects.equals(authenticatedUser.getId(), orderRequestDTO.getUserId())) {
-            throw new UserNotAuthorizedException("You are not allowed to place an order for another user.");
+        User loggedInUser = getLoggedInUser();
+        if (!isOwnerOrSelf(loggedInUser, orderRequestDTO.getUserId())) {
+            throw new ResourceNotFoundException("Access denied: Cannot create order for another user");
         }
-
 
         User user = userRepository.findById(orderRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + orderRequestDTO.getUserId()));
@@ -78,7 +79,6 @@ public class OrderService {
                 throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
             }
 
-
             product.setStock(product.getStock() - itemDto.getQuantity());
             productRepository.save(product);
 
@@ -100,9 +100,7 @@ public class OrderService {
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + user.getId()));
 
-        // 2. Uss cart ke saare items delete karein (METHOD CALL UPDATE KIYA GAYA)
         cartItemRepository.deleteAllByCartId(cart.getId());
-
 
         return OrderMapper.toDTO(savedOrder);
     }
@@ -110,11 +108,26 @@ public class OrderService {
     public OrderResponseDTO getOrderById(int id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
+
+        User loggedInUser = getLoggedInUser();
+        if (!isOwnerOrSelf(loggedInUser, order.getUser())) {
+            throw new ResourceNotFoundException("Access denied: Cannot view another user's order");
+        }
+
         return OrderMapper.toDTO(order);
     }
 
     public List<OrderResponseDTO> getOrdersByUserId(int userId) {
+        User loggedInUser = getLoggedInUser();
+        if (!isOwnerOrSelf(loggedInUser, userId)) {
+            throw new ResourceNotFoundException("Access denied: Cannot view another user's orders");
+        }
+
         List<Order> orders = orderRepository.findByUserId(userId);
+        if (orders == null || orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for user with ID: " + userId);
+        }
+
         return orders.stream()
                 .map(OrderMapper::toDTO)
                 .collect(Collectors.toList());
@@ -122,27 +135,19 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDTO updateOrderStatus(int sellerId, int id, String status) {
-
         Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new EntityNotFoundException("Seller with ID " + sellerId + " does not exist."));
-
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
 
-        // Step 2: Check karein ki kya order ka koi bhi product is seller ka hai
-        // Yeh product table ke seller_id column se compare karega
         boolean isSellerOfThisOrder = order.getOrderItems().stream()
                 .anyMatch(orderItem -> orderItem.getProduct().getSeller().getId() == sellerId);
 
-
-
         if (!isSellerOfThisOrder) {
-            // Agar seller maalik nahi hai, to exception throw karein
             throw new SellerNotAuthorizedException("Seller with ID " + sellerId + " is not authorized to update this order.");
         }
 
-        // Step 3: Agar seller authorized hai, to order ka status update karein
         Order.OrderStatus currentStatus = order.getStatus();
         Order.OrderStatus newStatus;
 
@@ -170,24 +175,24 @@ public class OrderService {
                 break;
             case DELIVERED:
             case CANCELLED:
-                // Delivered ya Cancelled order ka status nahi badal sakte
                 throw new IllegalStateException("A " + currentStatus + " order status cannot be changed.");
         }
-        // --- LOGIC KHATAM ---
 
-
-        // Step 4: Agar sab kuch sahi hai, to order ka status update karein
         order.setStatus(newStatus);
         Order updatedOrder = orderRepository.save(order);
         return OrderMapper.toDTO(updatedOrder);
-
     }
 
-
     @Transactional
-    public void cancelOrder(int id) {
+    public void deleteOrder(int id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
+
+        User loggedInUser = getLoggedInUser();
+        if (!isOwnerOrSelf(loggedInUser, order.getUser())) {
+            throw new ResourceNotFoundException("Access denied: Cannot delete another user's order");
+        }
+
         orderRepository.delete(order);
     }
 }
