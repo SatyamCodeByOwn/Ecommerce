@@ -1,157 +1,211 @@
-# E-Commerce Platform Backend - Project Documentation
+🛒 E-Commerce Platform Backend
 
-# 1. Project Overview
+Spring Boot | Java | PostgreSQL | Secure Multi-Role E-Commerce System
 
-This is a Spring Boot-based backend application designed for a multi-role e-commerce platform. Its design is based on a layered architecture, where the responsibility of each component is clearly defined. This project serves as an MVP (Minimum Viable Product) that covers all the essential features of an e-commerce system, such as user management, product catalog, order processing, and payments.
 
-# 2. Core Features & Scope
 
-The application supports three primary roles: Customer, Seller, and Owner.
 
-## Customer
 
-* Browse and search for products.
-* Add, update, and remove products from the shopping cart.
-* Place an order from the cart.
-* View the status of their orders.
-* Write reviews for products.
 
-## Seller
 
-* Register on the platform (subject to approval).
-* Manage (create, read, update, delete) their own products.
-* View orders placed for their products.
-* Update the status of orders (PENDING -> PROCESSING -> SHIPPED ->(DELIVERED/CANCELLED) ).
 
-## Owner
+---
 
-* APPROVE or REJECT new seller registrations.
-* Manage platform-wide categories.
-* View all users, products, and orders on the platform.
+📌 1. Project Overview
 
-# 3. User Stories
+This is a Spring Boot-based backend for a multi-role e-commerce platform, built on a layered architecture (Controller → Service → Repository).
+The project is designed as an MVP (Minimum Viable Product) and covers core features like:
 
-| ID  | User Story                                                              | Role     | Priority |
-|-----|-------------------------------------------------------------------------|----------|----------|
-| US1 | As a *Customer*, I want to register for an account so that I can place orders. | Customer | High     |
-| US2 | As a *Customer*, I want to browse products so I can find what I want to buy. | Customer | High     |
-| US3 | As a *Customer*, I want to add products to a shopping cart to purchase multiple items. | Customer | High     |
-| US4 | As a *Customer*, I want to place an order from my cart to complete my purchase. | Customer | High     |
-| US5 | As a *Seller*, I want to add new products to my catalog so I can offer them for sale. | Seller   | High     |
-| US6 | As an *Owner*, I want to review new seller applications so I can approve or reject them. | Owner | Medium
+✅ User Management
+✅ Product Catalog
+✅ Order Processing
+✅ Secure Payments (future)
 
-# 4. Design & Domain Modeling
 
-## 4.1. Layered Architecture
+---
 
-We have utilized a classic 3-tier architecture:
+🚀 2. Core Features & Scope
 
-* **Controller (Presentation Layer)**: Handles the REST API endpoints.
-* **Service (Business Logic Layer)**: Implements all business rules, validation, and logic.
-* **Repository (Data Access Layer)**: Responsible for communicating with the database.
+The platform supports three roles:
 
-## 4.2. Key Design Decisions
-* **Role-Based Security** : The application uses Spring Security to protect endpoints. Access to different operations (like creating a product or approving a seller) is restricted based on user roles (CUSTOMER, SELLER, OWNER), ensuring that users can only perform actions they are authorized for.
+👤 Customer
 
-* **DTOs (Data Transfer Objects)**: The DTO pattern is used to ensure a clean separation between the API layer and the database entities. This allows us to send only the necessary data to the client and avoid exposing sensitive information (like password hashes).
+Browse & search products
 
-* **Transactional Services**: All methods in the service layer (@Service) are marked as @Transactional to maintain data integrity. If any operation fails, the entire transaction is rolled back.
+Manage shopping cart
 
-* **Global Exception Handling**: A centralized exception handler using @RestControllerAdvice has been implemented to send consistent JSON responses for all errors.
+Place orders & track status
 
-* **Logging with AOP**: We use Spring AOP (Aspect-Oriented Programming) to implement logging as a cross-cutting concern. A loggingAspect  intercepts method calls across different layers (Controllers, Services, Repositories) to log entry, exit, and execution time without cluttering the business logic.
+Write product reviews
 
-## 4.3. Core Entities
 
-* User
-* Role
-* Seller
-* Product
-* Categories
-* Order & OrderItem
-* Payment
-* Review
-* Cart & CartItem
-* ShippingAddress
-* Wishlist & WishlistItem
-* Commission
+🏪 Seller
 
-# 5. Technical Architecture & Implementation
+Register (approval required)
 
-## 5.1. Technology Stack
+Manage products (CRUD)
 
-* **Framework**: Spring Boot
-* **Language**: Java
-* **Database**: PostgreSQL
-* **Data Access**: Spring Data JPA / Hibernate
-* **Security**: Spring Security
-* **Build Tool**: Maven
-* **Utilities**: Lombok
+Track orders placed for their items
 
-## 5.2. Project Package Layout
-```
+Update order status (PENDING → PROCESSING → SHIPPED → DELIVERED / CANCELLED)
+
+
+👑 Owner (Admin)
+
+Approve/reject seller applications
+
+Manage categories
+
+View/manage all users, products & orders
+
+
+
+---
+
+📖 3. User Stories
+
+ID User Story Role Priority
+
+US1 Register for an account to place orders Customer 🔥 High
+US2 Browse products before purchase Customer 🔥 High
+US3 Add products to cart Customer 🔥 High
+US4 Place an order from the cart Customer 🔥 High
+US5 Add products to catalog Seller 🔥 High
+US6 Approve/reject seller applications Owner ⚡ Medium
+
+
+
+---
+
+🏗️ 4. Design & Domain Modeling
+
+4.1 Architecture
+
+Controller (API Layer) → REST endpoints
+
+Service (Business Logic) → Validations, rules, transactions
+
+Repository (Data Access) → Database operations via Spring Data JPA
+
+
+4.2 Key Design Choices
+
+🔒 Role-Based Security with Spring Security
+
+📦 DTOs to protect entities and structure responses
+
+🔄 @Transactional Services for data consistency
+
+⚠️ Global Exception Handling via @RestControllerAdvice
+
+📜 AOP Logging for method tracing & performance tracking
+
+
+4.3 Core Entities
+
+User, Role, Seller, Product, Category, Order, Payment, Review, Cart, Wishlist, Commission
+
+
+---
+
+🛠️ 5. Technical Architecture
+
+5.1 Technology Stack
+
+Language: Java
+
+Framework: Spring Boot
+
+Database: PostgreSQL
+
+ORM: Hibernate + Spring Data JPA
+
+Security: Spring Security
+
+Build Tool: Maven
+
+Utilities: Lombok
+
+
+5.2 Package Layout
+
 app.ecom
 ├── config          // SecurityConfig, etc.
-├── controller      // REST API Controllers
-├── dto             // Data Transfer Objects (request/response)
-│   ├── mappers
-│   ├── request_dto
-│   └── response_dto
+├── controller      // REST Controllers
+├── dto             // DTOs (req/resp, mappers)
 ├── entities        // JPA Entities
-├── exceptions      // Custom exceptions and global handler
+├── exceptions      // Custom + Global Handler
 ├── logging         // AOP Logging Aspect
-├── services        // Business logic
-└── repositories    // Spring Data JPA Repositories
-```
-## 5.3. REST API Endpoints (CRUD Examples)
+├── services        // Business Logic
+└── repositories    // JPA Repositories
 
-## User:
+5.3 REST Endpoints (Sample)
 
-* POST `/api/users/register` Public: Registers a new user.
-* GET `/api/users/{id}` Authorized: Retrieves a user's details.
-* GET `/api/users` Owner: Retrieves a list of all users.
+User
 
-## Seller:
+POST /api/users/register → Register new user
 
-* POST `/api/sellers/register` Customer: Applies to become a seller.
-* PUT `/api/sellers/{id}/approve` Owner: Approves a seller's registration.
-* PUT `/api/sellers/{id}/reject` Owner: Rejects a seller's registration.
+GET /api/users/{id} → Get user details
 
-## Product Domain:
+GET /api/users → (Owner only) Get all users
 
-* GET `/api/products`: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
-* GET `/api/products/{id}`: Retrieves details for a specific product.
-* POST `/api/products`: Creates a new product (accessible to SELLER role only).
-* PUT `/api/products/{id}`: Updates an existing product (accessible to SELLER role only).
-  
-## Order Domain:
 
-* POST   `/api/orders`: Creates a new order (accessible to CUSTOMER role only).
-* GET    `/api/orders/{id}`: Retrieves details for a specific order.
-* PUT    `/api/orders/{id}/seller-by-user/{userId}/status`: Updates the order status (accessible to the authentic SELLER of that order only).
+Seller
 
-# 6. Testing Strategy
+POST /api/sellers/register → Apply to be a seller
 
-* The project focuses on primary type of testing:
-`Unit Tests`: The business logic within service classes like UserService and OrderService is tested in isolation. This is achieved using JUnit and Mockito. Mockito allows us to "mock" the repository layer, eliminating the need for a real database.
+PUT /api/sellers/{id}/approve → Owner approves seller
 
-# 7. Future Enhancements & Roadmap
+PUT /api/sellers/{id}/reject → Owner rejects seller
 
-While the current version serves as a functional MVP, the following features are planned for future releases:
 
-* **`Payment Gateway Integration`** : Integrate with a real payment gateway like Stripe or Razorpay to handle actual transactions.
+Products
 
-* `JWT Authentication`: Implement JSON Web Tokens (JWT) for stateless and more secure API authentication.
+GET /api/products → List products (filter by category)
 
-* `AI-Powered Virtual Try-On`: Implement an AI/ML feature allowing users to upload their photo and visualize how fashion products (e.g., clothing, accessories) would look on them, enhancing the shopping experience.
+GET /api/products/{id} → Get product details
 
-* `AR/VR Virtual Try-On`: Implement an Augmented/Virtual Reality feature that allows users to visualize products (like apparel or furniture) in their own space in real-time using their device's camera.
+POST /api/products → (Seller only) Create product
 
-* `Admin Dashboard`: Develop a simple UI for the Owner/Admin to manage users, approve sellers, and view platform analytics.
+PUT /api/products/{id} → (Seller only) Update product
 
-* `Discount & Coupon System`: Add functionality for creating and applying discount codes to orders.
 
-* `Product Recommendations`: Implement a basic recommendation engine to suggest products to users based on their browsing history or past purchases.
+Orders
 
-* `Deployment`: Containerize the application using Docker and deploy it to a cloud platform like AWS or Heroku.
+POST /api/orders → (Customer only) Place new order
 
+GET /api/orders/{id} → Get order details
+
+PUT /api/orders/{id}/seller-by-user/{userId}/status → (Seller only) Update order status
+
+
+
+---
+
+🧪 6. Testing Strategy
+
+Unit Tests with JUnit + Mockito
+
+Service layer tested in isolation (mock repositories)
+
+Ensures correctness of business logic without DB dependency
+
+
+
+---
+
+🌟 7. Future Enhancements
+
+💳 Payment Gateway Integration (Stripe, Razorpay)
+
+🔑 JWT Authentication for stateless sessions
+
+🤖 AI-Powered Recommendations & Virtual Try-On
+
+🕶️ AR/VR Support for immersive shopping
+
+📊 Admin Dashboard (analytics, approvals, insights)
+
+🎟️ Discount & Coupon System
+
+🐳 Dockerized Deployment (AWS / Heroku)
