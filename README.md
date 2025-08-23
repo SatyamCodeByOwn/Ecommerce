@@ -28,7 +28,7 @@ The project is designed as an MVP (Minimum Viable Product) and covers core featu
 
 The platform supports three roles:
 
-## 👤 Customer
+👤 Customer
 
 * Browse and search for products.
 * Manage shopping cart.
@@ -37,7 +37,7 @@ The platform supports three roles:
 
 
 
-## 🏪 Seller
+🏪 Seller
 
 * Register (approval required)
 * Track orders placed for their items
@@ -45,7 +45,7 @@ The platform supports three roles:
 * Update the status of orders (PENDING -> PROCESSING -> SHIPPED ->(DELIVERED/CANCELLED) ).
 
 
-## 👑 Owner (Admin)
+👑 Owner (Admin)
 
 * APPROVE or REJECT new seller registrations.
 * Manage platform-wide categories.
@@ -59,7 +59,7 @@ The platform supports three roles:
 
 # 📖 3. User Stories
 
-## ID User Story Role Priority
+ID User Story Role Priority
 
 | ID  | User Story                                                              | Role     | Priority |
 |-----|-------------------------------------------------------------------------|----------|----------|
@@ -76,16 +76,16 @@ The platform supports three roles:
 
 # 🏗️ 4. Design & Domain Modeling
 
-## 4.1 Architecture
+4.1 Architecture
 
-Controller (API Layer) → REST endpoints
+* Controller (API Layer) → REST endpoints
 
-Service (Business Logic) → Validations, rules, transactions
+* Service (Business Logic) → Validations, rules, transactions
 
-Repository (Data Access) → Database operations via Spring Data JPA
+* Repository (Data Access) → Database operations via Spring Data JPA
 
 
-## 4.2 Key Design Choices
+4.2 Key Design Choices
 
 🔒 Role-Based Security with Spring Security
 
@@ -98,7 +98,7 @@ Repository (Data Access) → Database operations via Spring Data JPA
 📜 AOP Logging for method tracing & performance tracking
 
 
-## 4.3 Core Entities
+4.3 Core Entities
 
 * User
 * Role
@@ -118,7 +118,7 @@ Repository (Data Access) → Database operations via Spring Data JPA
 
 # 🛠️ 5. Technical Architecture
 
-## 5.1 Technology Stack
+5.1 Technology Stack
 
 * **Framework**: Spring Boot
 * **Language**: Java
@@ -129,7 +129,7 @@ Repository (Data Access) → Database operations via Spring Data JPA
 * **Utilities**: Lombok
 
 
-## 5.2 Package Layout
+5.2 Package Layout
 ```
 app.ecom
 ├── config          // SecurityConfig, etc.
@@ -144,7 +144,7 @@ app.ecom
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
 ```
-## 5.3 REST Endpoints (Sample)
+5.3 REST Endpoints (Sample)
 
 ## User:
 
@@ -177,11 +177,11 @@ app.ecom
 
 # 🧪 6. Testing Strategy
 
-Unit Tests with JUnit + Mockito
+* Unit Tests with JUnit + Mockito
 
-Service layer tested in isolation (mock repositories)
+* Service layer tested in isolation (mock repositories)
 
-Ensures correctness of business logic without DB dependency
+* Ensures correctness of business logic without DB dependency
 
 
 
@@ -189,16 +189,16 @@ Ensures correctness of business logic without DB dependency
 
 # 🌟 7. Future Enhancements
 
-💳 Payment Gateway Integration (Stripe, Razorpay)
+* 💳 Payment Gateway Integration (Stripe, Razorpay)
 
-🔑 JWT Authentication for stateless sessions
+* 🔑 JWT Authentication for stateless sessions
 
-🤖 AI-Powered Recommendations & Virtual Try-On
+* 🤖 AI-Powered Recommendations & Virtual Try-On
 
-🕶️ AR/VR Support for immersive shopping
+* 🕶️ AR/VR Support for immersive shopping
 
-📊 Admin Dashboard (analytics, approvals, insights)
+* 📊 Admin Dashboard (analytics, approvals, insights)
 
-🎟️ Discount & Coupon System
+* 🎟️ Discount & Coupon System
 
 🐳 Dockerized Deployment (AWS / Heroku)
