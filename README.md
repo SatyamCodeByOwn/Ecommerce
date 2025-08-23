@@ -1,4 +1,4 @@
-🛒 E-Commerce Platform Backend
+# 🛒 E-Commerce Platform Backend
 
 Spring Boot | Java | PostgreSQL | Secure Multi-Role E-Commerce System
 
@@ -11,7 +11,7 @@ Spring Boot | Java | PostgreSQL | Secure Multi-Role E-Commerce System
 
 ---
 
-📌 1. Project Overview
+# 📌 1. Project Overview
 
 This is a Spring Boot-based backend for a multi-role e-commerce platform, built on a layered architecture (Controller → Service → Repository).
 The project is designed as an MVP (Minimum Viable Product) and covers core features like:
@@ -24,7 +24,7 @@ The project is designed as an MVP (Minimum Viable Product) and covers core featu
 
 ---
 
-🚀 2. Core Features & Scope
+# 🚀 2. Core Features & Scope
 
 The platform supports three roles:
 
@@ -57,7 +57,7 @@ The platform supports three roles:
 
 ---
 
-📖 3. User Stories
+# 📖 3. User Stories
 
 ID User Story Role Priority
 
@@ -74,7 +74,7 @@ ID User Story Role Priority
 
 ---
 
-🏗️ 4. Design & Domain Modeling
+# 🏗️ 4. Design & Domain Modeling
 
 4.1 Architecture
 
@@ -116,7 +116,7 @@ Repository (Data Access) → Database operations via Spring Data JPA
 
 ---
 
-🛠️ 5. Technical Architecture
+# 🛠️ 5. Technical Architecture
 
 5.1 Technology Stack
 
@@ -175,7 +175,7 @@ app.ecom
 
 ---
 
-🧪 6. Testing Strategy
+# 🧪 6. Testing Strategy
 
 Unit Tests with JUnit + Mockito
 
@@ -187,7 +187,7 @@ Ensures correctness of business logic without DB dependency
 
 ---
 
-🌟 7. Future Enhancements
+# 🌟 7. Future Enhancements
 
 💳 Payment Gateway Integration (Stripe, Razorpay)
 
