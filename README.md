@@ -30,33 +30,28 @@ The platform supports three roles:
 
 👤 Customer
 
-Browse & search products
+* Browse and search for products.
+* Manage shopping cart.
+* Place orders & track status
+* Write reviews for products.
 
-Manage shopping cart
-
-Place orders & track status
-
-Write product reviews
 
 
 🏪 Seller
 
-Register (approval required)
-
-Manage products (CRUD)
-
-Track orders placed for their items
-
-Update order status (PENDING → PROCESSING → SHIPPED → DELIVERED / CANCELLED)
+* Register (approval required)
+* Track orders placed for their items
+* View orders placed for their products.
+* Update the status of orders (PENDING -> PROCESSING -> SHIPPED ->(DELIVERED/CANCELLED) ).
 
 
 👑 Owner (Admin)
 
-Approve/reject seller applications
+* APPROVE or REJECT new seller registrations.
+* Manage platform-wide categories.
+*View/manage all users, products & orders
 
-Manage categories
 
-View/manage all users, products & orders
 
 
 
@@ -66,12 +61,14 @@ View/manage all users, products & orders
 
 ID User Story Role Priority
 
-US1 Register for an account to place orders Customer 🔥 High
-US2 Browse products before purchase Customer 🔥 High
-US3 Add products to cart Customer 🔥 High
-US4 Place an order from the cart Customer 🔥 High
-US5 Add products to catalog Seller 🔥 High
-US6 Approve/reject seller applications Owner ⚡ Medium
+| ID  | User Story                                                              | Role     | Priority |
+|-----|-------------------------------------------------------------------------|----------|----------|
+| US1 | Register for an account to place orders. | Customer | High     |
+| US2 | Browse products before purchase. | Customer | High     |
+| US3 | Add products to cart Customer. | Customer | High     |
+| US4 | Place an order from the cart Customer. | Customer | High     |
+| US5 | Add products to catalog Seller. | Seller   | High     |
+| US6 | Approve/reject seller applications. | Owner | Medium
 
 
 
@@ -103,7 +100,18 @@ Repository (Data Access) → Database operations via Spring Data JPA
 
 4.3 Core Entities
 
-User, Role, Seller, Product, Category, Order, Payment, Review, Cart, Wishlist, Commission
+* User
+* Role
+* Seller
+* Product
+* Categories
+* Order & OrderItem
+* Payment
+* Review
+* Cart & CartItem
+* ShippingAddress
+* Wishlist & WishlistItem
+* Commission
 
 
 ---
@@ -112,71 +120,56 @@ User, Role, Seller, Product, Category, Order, Payment, Review, Cart, Wishlist, C
 
 5.1 Technology Stack
 
-Language: Java
-
-Framework: Spring Boot
-
-Database: PostgreSQL
-
-ORM: Hibernate + Spring Data JPA
-
-Security: Spring Security
-
-Build Tool: Maven
-
-Utilities: Lombok
+* **Framework**: Spring Boot
+* **Language**: Java
+* **Database**: PostgreSQL
+* **Data Access**: Spring Data JPA / Hibernate
+* **Security**: Spring Security
+* **Build Tool**: Maven
+* **Utilities**: Lombok
 
 
 5.2 Package Layout
 
 app.ecom
 ├── config          // SecurityConfig, etc.
-├── controller      // REST Controllers
-├── dto             // DTOs (req/resp, mappers)
+├── controller      // REST API Controllers
+├── dto             // Data Transfer Objects (request/response)
+│   ├── mappers
+│   ├── request_dto
+│   └── response_dto
 ├── entities        // JPA Entities
-├── exceptions      // Custom + Global Handler
+├── exceptions      // Custom exceptions and global handler
 ├── logging         // AOP Logging Aspect
-├── services        // Business Logic
-└── repositories    // JPA Repositories
+├── services        // Business logic
+└── repositories    // Spring Data JPA Repositories
 
 5.3 REST Endpoints (Sample)
 
-User
+## User:
 
-POST /api/users/register → Register new user
+* POST `/api/users/register` Public: Registers a new user.
+* GET `/api/users/{id}` Authorized: Retrieves a user's details.
+* GET `/api/users` Owner: Retrieves a list of all users.
 
-GET /api/users/{id} → Get user details
+## Seller:
 
-GET /api/users → (Owner only) Get all users
+* POST `/api/sellers/register` Customer: Applies to become a seller.
+* PUT `/api/sellers/{id}/approve` Owner: Approves a seller's registration.
+* PUT `/api/sellers/{id}/reject` Owner: Rejects a seller's registration.
 
+## Product Domain:
 
-Seller
+* GET `/api/products`: Retrieves a list of all products. Can be filtered, e.g., ?category=ELECTRONICS.
+* GET `/api/products/{id}`: Retrieves details for a specific product.
+* POST `/api/products`: Creates a new product (accessible to SELLER role only).
+* PUT `/api/products/{id}`: Updates an existing product (accessible to SELLER role only).
+  
+## Order Domain:
 
-POST /api/sellers/register → Apply to be a seller
-
-PUT /api/sellers/{id}/approve → Owner approves seller
-
-PUT /api/sellers/{id}/reject → Owner rejects seller
-
-
-Products
-
-GET /api/products → List products (filter by category)
-
-GET /api/products/{id} → Get product details
-
-POST /api/products → (Seller only) Create product
-
-PUT /api/products/{id} → (Seller only) Update product
-
-
-Orders
-
-POST /api/orders → (Customer only) Place new order
-
-GET /api/orders/{id} → Get order details
-
-PUT /api/orders/{id}/seller-by-user/{userId}/status → (Seller only) Update order status
+* POST   `/api/orders`: Creates a new order (accessible to CUSTOMER role only).
+* GET    `/api/orders/{id}`: Retrieves details for a specific order.
+* PUT    `/api/orders/{id}/seller-by-user/{userId}/status`: Updates the order status (accessible to the authentic SELLER of that order only).
 
 
 
