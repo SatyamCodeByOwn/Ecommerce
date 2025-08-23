@@ -201,4 +201,4 @@ app.ecom
 
 * 🎟️ Discount & Coupon System
 
-🐳 Dockerized Deployment (AWS / Heroku)
+* 🐳 Dockerized Deployment (AWS / Heroku)
