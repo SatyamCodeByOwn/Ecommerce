@@ -7,6 +7,7 @@ import app.ecom.dto.response_dto.OrderResponseDTO;
 import app.ecom.entities.*;
 import app.ecom.exceptions.custom.ResourceAlreadyExistsException;
 import app.ecom.exceptions.custom.SellerNotAuthorizedException;
+import app.ecom.exceptions.custom.UserNotAuthorizedException;
 import app.ecom.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,21 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedUsername = authentication.getName();
+
+        // Fetch the user from DB using the authenticated username
+        User authenticatedUser = userRepository.findByEmail(authenticatedUsername)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
+
+        // Check if the authenticated user is trying to place an order for themselves
+
+        if (!Objects.equals(authenticatedUser.getId(), orderRequestDTO.getUserId())) {
+            throw new UserNotAuthorizedException("You are not allowed to place an order for another user.");
+        }
+
+
         User user = userRepository.findById(orderRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + orderRequestDTO.getUserId()));
 
