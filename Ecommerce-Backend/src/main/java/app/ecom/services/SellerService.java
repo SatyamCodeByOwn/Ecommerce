@@ -140,6 +140,7 @@ public class SellerService {
         sellerRepository.deleteById(sellerId);
     }
 
+    @Transactional
     public SellerResponseDTO approveSeller(int sellerId) {
         Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
@@ -150,8 +151,9 @@ public class SellerService {
         return SellerMapper.toDTO(seller);
     }
 
+    @Transactional
     public SellerResponseDTO rejectSeller(int sellerId) {
-        Seller seller = sellerRepository.findById(sellerId)
+        Seller seller = sellerRepository.findByUserId(sellerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
 
         seller.setApprovalStatus(Seller.ApprovalStatus.REJECTED);

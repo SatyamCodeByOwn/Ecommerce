@@ -95,7 +95,7 @@ public class ProductService {
     }
 
 
-
+    @Transactional
     public ProductResponseDTO updateProduct(int id, ProductRequestDTO dto) throws IOException {
         // Step 1: Find product
         Product product = productRepository.findById(id)
