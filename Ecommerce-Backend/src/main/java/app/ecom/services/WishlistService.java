@@ -1,18 +1,23 @@
 package app.ecom.services;
 
+import app.ecom.dto.mappers.WishlistMapper;
 import app.ecom.dto.response_dto.WishlistResponseDTO;
 import app.ecom.entities.Product;
 import app.ecom.entities.User;
 import app.ecom.entities.Wishlist;
 import app.ecom.entities.WishlistItem;
 import app.ecom.exceptions.custom.ResourceNotFoundException;
-import app.ecom.dto.mappers.WishlistMapper;
+import app.ecom.exceptions.custom.RoleNotAllowedException;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.UserRepository;
 import app.ecom.repositories.WishlistItemRepository;
 import app.ecom.repositories.WishlistRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -33,36 +38,52 @@ public class WishlistService {
         this.userRepository = userRepository;
     }
 
-    // ✅ Get or create wishlist
+    private User getAuthenticatedCustomer(int userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        if (loggedInUser.getId() != userId) {
+            throw new RoleNotAllowedException("You are not authorized to access another user's wishlist.");
+        }
+
+        if (loggedInUser.getRole().getId() != 3) {
+            throw new RoleNotAllowedException("Only customers can access or modify wishlists.");
+        }
+
+        return loggedInUser;
+    }
+
     public WishlistResponseDTO getOrCreateWishlist(int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        User customer = getAuthenticatedCustomer(userId);
 
         Wishlist wishlist = wishlistRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Wishlist newWishlist = new Wishlist();
-                    newWishlist.setUser(user);
+                    newWishlist.setUser(customer);
                     return wishlistRepository.save(newWishlist);
                 });
 
         return WishlistMapper.toResponseDTO(wishlist);
     }
 
-    // ✅ Add product to wishlist
     public WishlistResponseDTO addProductToWishlist(int userId, int productId) {
+        getAuthenticatedCustomer(userId);
+
         Wishlist wishlist = wishlistRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wishlist not found for userId: " + userId));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
 
-        // Check if the product already exists in wishlist
         boolean exists = wishlist.getWishlistItems().stream()
                 .anyMatch(item -> item.getProduct().getId() == productId);
 
         if (!exists) {
             WishlistItem item = new WishlistItem();
-            wishlist.addWishlistItem(item); // helper sets both sides
+            wishlist.addWishlistItem(item);
             item.setProduct(product);
         }
 
@@ -70,8 +91,9 @@ public class WishlistService {
         return WishlistMapper.toResponseDTO(wishlist);
     }
 
-    // ✅ Remove product from wishlist
     public WishlistResponseDTO removeProductFromWishlist(int userId, int productId) {
+        getAuthenticatedCustomer(userId);
+
         Wishlist wishlist = wishlistRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wishlist not found for userId: " + userId));
 
@@ -87,8 +109,9 @@ public class WishlistService {
         return WishlistMapper.toResponseDTO(wishlist);
     }
 
-    // ✅ Clear wishlist
     public WishlistResponseDTO clearWishlist(int userId) {
+        getAuthenticatedCustomer(userId);
+
         Wishlist wishlist = wishlistRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Wishlist not found for userId: " + userId));
 

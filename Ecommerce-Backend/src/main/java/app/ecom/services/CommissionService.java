@@ -11,6 +11,7 @@ import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.dto.mappers.CommissionMapper;
 import app.ecom.repositories.CommissionRepository;
 import app.ecom.repositories.OrderItemRepository;
+import app.ecom.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,9 @@ public class CommissionService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private CommissionMapper commissionMapper;
@@ -119,6 +123,10 @@ public class CommissionService {
     }
 
     public List<CommissionResponseDTO> getCommissionsByOrderId(int orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new ResourceNotFoundException("Order not found with id: " + orderId);
+        }
+
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
         return orderItems.stream()
@@ -128,6 +136,7 @@ public class CommissionService {
                 .map(commissionMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
 
     public BigDecimal getOwnerRevenue() {
         return commissionRepository.findTotalRevenue();

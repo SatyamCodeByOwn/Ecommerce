@@ -31,7 +31,6 @@ public class PaymentService {
 
         double epsilon = 0.01;
         if (Math.abs(order.getTotalAmount() - paymentRequestDto.getAmount().doubleValue()) > epsilon) {
-            // Agar amount match nahi hota, to payment fail kar dein.
             throw new IllegalArgumentException(
                     "Payment amount mismatch. Order total is " + order.getTotalAmount() +
                             " but payment amount is " + paymentRequestDto.getAmount()
@@ -52,9 +51,14 @@ public class PaymentService {
     }
 
     public List<PaymentResponseDto> getPaymentsByOrderId(int orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new ResourceNotFoundException("Order not found with id: " + orderId);
+        }
+
         List<Payment> payments = paymentRepository.findByOrder_Id(orderId);
         return payments.stream()
                 .map(PaymentMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
 }

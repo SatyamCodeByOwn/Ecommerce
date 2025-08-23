@@ -128,7 +128,6 @@ class SellerServiceTest {
     @Test
     void getSellerById_success() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.of(seller));
 
         SellerResponseDTO response = sellerService.getSellerById(user.getId(), seller.getId());
@@ -190,7 +189,6 @@ class SellerServiceTest {
         verify(sellerRepository).deleteById(seller.getId());
     }
 
-
     @Test
     void deleteSeller_notFound_throwsException() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -202,7 +200,7 @@ class SellerServiceTest {
 
     @Test
     void approveSeller_success() {
-        when(sellerRepository.findById(seller.getId())).thenReturn(Optional.of(seller));
+        when(sellerRepository.findByUserId(seller.getId())).thenReturn(Optional.of(seller));
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
 
         SellerResponseDTO response = sellerService.approveSeller(seller.getId());
@@ -222,18 +220,11 @@ class SellerServiceTest {
 
     @Test
     void getTotalRevenue_success() {
-        // Arrange: mock authenticated user
-        when(authentication.getName()).thenReturn(user.getEmail());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(orderItemRepository.getTotalRevenueBySeller(user.getId())).thenReturn(200.0);
 
-        // Act
         double revenue = sellerService.getTotalRevenue(user.getId());
 
-        // Assert
         assertEquals(200.0, revenue);
     }
-
 }

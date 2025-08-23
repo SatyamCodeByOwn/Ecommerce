@@ -33,32 +33,34 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+    }
+
     @Transactional
     public UserResponseDTO registerUser(UserRequestDTO dto) {
-
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new ResourceAlreadyExistsException("User", "username", dto.getUsername());
         }
-
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new ResourceAlreadyExistsException("User", "email", dto.getEmail());
         }
-
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new ResourceAlreadyExistsException("User", "phone number", dto.getPhoneNumber());
+        }
+
+        if (dto.getRoleId() == 1) {
+            throw new RoleNotAllowedException("Role OWNER is not allowed for registration");
         }
 
         Role role = roleRepository.findById(dto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id: " + dto.getRoleId()));
 
-        if (dto.getRoleId()==1) {
-            throw new RoleNotAllowedException("Role OWNER is not allowed for registration");
-        }
-
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
-
         User user = UserMapper.toEntity(dto, role, hashedPassword);
-
         User savedUser = userRepository.save(user);
 
         return UserMapper.toResponseDTO(savedUser);
@@ -72,34 +74,25 @@ public class UserService {
     }
 
     public UserResponseDTO getUserById(int id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        User loggedInUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        User loggedInUser = getAuthenticatedUser();
 
         if (loggedInUser.getId() != id && loggedInUser.getRole().getId() != 1) {
             throw new UserNotAuthorizedException("You are not authorized to view this user's details.");
         }
 
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        return UserMapper.toResponseDTO(loggedInUser);
+        return UserMapper.toResponseDTO(user);
     }
-
 
     @Transactional
     public UserResponseDTO updateUser(int requesterId, int userId, UserRequestDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        User loggedInUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        User loggedInUser = getAuthenticatedUser();
 
         if (loggedInUser.getId() != requesterId || requesterId != userId) {
             throw new UserNotAuthorizedException("You are not authorized to update another user's profile.");
         }
-
-        User user = loggedInUser;
 
         if (userRepository.existsByUsernameAndIdNot(dto.getUsername(), userId)) {
             throw new ResourceAlreadyExistsException("User", "username", dto.getUsername());
@@ -109,7 +102,6 @@ public class UserService {
             throw new ResourceAlreadyExistsException("User", "email", dto.getEmail());
         }
 
-        // Prevent assigning OWNER role
         if (dto.getRoleId() == 1) {
             throw new RoleNotAllowedException("Role OWNER is not allowed.");
         }
@@ -118,27 +110,20 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id: " + dto.getRoleId()));
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
-
-        UserMapper.updateEntity(user, dto, role, hashedPassword);
-        User updatedUser = userRepository.save(user);
+        UserMapper.updateEntity(loggedInUser, dto, role, hashedPassword);
+        User updatedUser = userRepository.save(loggedInUser);
 
         return UserMapper.toResponseDTO(updatedUser);
     }
 
-
     @Transactional
     public void deactivateUser(int requesterId, int deactivateUserId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        User loggedInUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        User loggedInUser = getAuthenticatedUser();
 
         if (loggedInUser.getId() != requesterId) {
             throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
         }
 
-        // Allow only self or owner to deactivate
         if (requesterId != deactivateUserId && loggedInUser.getRole().getId() != 1) {
             throw new UserNotAuthorizedException("You are not authorized to deactivate this user.");
         }
@@ -150,20 +135,14 @@ public class UserService {
         userRepository.save(targetUser);
     }
 
-
     @Transactional
     public void activateUser(int requesterId, int targetUserId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        User loggedInUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        User loggedInUser = getAuthenticatedUser();
 
         if (loggedInUser.getId() != requesterId) {
             throw new UserNotAuthorizedException("You are not authorized to perform this operation.");
         }
 
-        // Only owner can activate users
         if (loggedInUser.getRole().getId() != 1) {
             throw new UserNotAuthorizedException("Only the owner can activate users.");
         }

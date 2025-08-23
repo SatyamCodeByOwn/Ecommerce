@@ -95,7 +95,6 @@ class UserServiceTest {
         when(userRepository.existsByUsername(any())).thenReturn(false);
         when(userRepository.existsByEmail(any())).thenReturn(false);
         when(userRepository.existsByPhoneNumber(any())).thenReturn(false);
-        when(roleRepository.findById(1)).thenReturn(Optional.of(roleOwner));
 
         assertThrows(RoleNotAllowedException.class, () -> userService.registerUser(requestDTO));
     }
@@ -176,6 +175,7 @@ class UserServiceTest {
 
         when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(owner));
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
         userService.activateUser(2, 1);
         verify(userRepository).save(any(User.class));
     }
@@ -184,12 +184,10 @@ class UserServiceTest {
     void activateUser_ShouldThrow_WhenUnauthorized() {
         mockSecurityContext("other@example.com");
         User otherUser = new User(3, "other", "other@example.com", "pass", "8888888888", roleCustomer, true);
-
         when(userRepository.findByEmail("other@example.com")).thenReturn(Optional.of(otherUser));
 
         assertThrows(UserNotAuthorizedException.class, () -> userService.activateUser(3, 1));
     }
-
 
     @Test
     void getAllUsers_ShouldReturnList() {
@@ -205,6 +203,8 @@ class UserServiceTest {
     void getUserById_Success() {
         mockSecurityContext("test@example.com");
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+
         try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
             mockedMapper.when(() -> UserMapper.toResponseDTO(user)).thenReturn(new UserResponseDTO());
             UserResponseDTO result = userService.getUserById(1);
@@ -216,6 +216,7 @@ class UserServiceTest {
     void getUserById_ShouldThrow_WhenNotFound() {
         mockSecurityContext("test@example.com");
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1));
     }
 }
