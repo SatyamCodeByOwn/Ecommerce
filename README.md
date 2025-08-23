@@ -76,7 +76,7 @@ ID User Story Role Priority
 
 # 🏗️ 4. Design & Domain Modeling
 
-4.1 Architecture
+## 4.1 Architecture
 
 * Controller (API Layer) → REST endpoints
 
@@ -85,7 +85,7 @@ ID User Story Role Priority
 * Repository (Data Access) → Database operations via Spring Data JPA
 
 
-4.2 Key Design Choices
+## 4.2 Key Design Choices
 
 🔒 Role-Based Security with Spring Security
 
@@ -98,7 +98,7 @@ ID User Story Role Priority
 📜 AOP Logging for method tracing & performance tracking
 
 
-4.3 Core Entities
+## 4.3 Core Entities
 
 * User
 * Role
@@ -118,7 +118,7 @@ ID User Story Role Priority
 
 # 🛠️ 5. Technical Architecture
 
-5.1 Technology Stack
+## 5.1 Technology Stack
 
 * **Framework**: Spring Boot
 * **Language**: Java
@@ -129,7 +129,7 @@ ID User Story Role Priority
 * **Utilities**: Lombok
 
 
-5.2 Package Layout
+## 5.2 Package Layout
 ```
 app.ecom
 ├── config          // SecurityConfig, etc.
@@ -144,7 +144,7 @@ app.ecom
 ├── services        // Business logic
 └── repositories    // Spring Data JPA Repositories
 ```
-5.3 REST Endpoints (Sample)
+## 5.3 REST Endpoints (Sample)
 
 ## User:
 
