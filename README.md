@@ -189,13 +189,13 @@ app.ecom
 
 # 🌟 7. Future Enhancements
 
-* 💳 Payment Gateway Integration (Stripe, Razorpay)
+* 🤖 **AI-Powered Recommendations & Virtual Try-On** (An AI/ML feature allowing users to upload their photo and visualize how fashion products (e.g., clothing, accessories) would look on them, enhancing the shopping experience.)
+  
+* 🕶️ **AR/VR Support for immersive shopping** (An Augmented/Virtual Reality feature that allows users to visualize products (like apparel or furniture) in their own space in real-time using their device's camera.)
 
 * 🔑 JWT Authentication for stateless sessions
 
-* 🤖 AI-Powered Recommendations & Virtual Try-On
-
-* 🕶️ AR/VR Support for immersive shopping
+* 💳 Payment Gateway Integration (Stripe, Razorpay)
 
 * 📊 Admin Dashboard (analytics, approvals, insights)
 
