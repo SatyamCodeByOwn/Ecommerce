@@ -10,14 +10,21 @@ import app.ecom.exceptions.custom.ResourceNotFoundException;
 import app.ecom.repositories.ProductRepository;
 import app.ecom.repositories.ReviewRepository;
 import app.ecom.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewService {
 
     @Autowired
@@ -31,6 +38,22 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDTO createReview(ReviewRequestDTO dto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedUsername = authentication.getName();
+
+        // Fetch authenticated user
+        User authenticatedUser = userRepository.findByEmail(authenticatedUsername)
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found"));
+
+        // Check if the authenticated user is posting a review for themselves
+        if (!Objects.equals(authenticatedUser.getId(), dto.getCustomerId())) {
+            throw new EntityNotFoundException("You are not allowed to post a review for another customer.");
+        }
+
+        dto.setCustomerId(authenticatedUser.getId());
+
+
         User customer = userRepository.findById(dto.getCustomerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + dto.getCustomerId()));
 

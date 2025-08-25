@@ -1,13 +1,13 @@
 package app.ecom.dto.request_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
@@ -24,4 +24,6 @@ public class ReviewRequestDTO {
     private double rating;
 
     private String comment;
+
+
 }
