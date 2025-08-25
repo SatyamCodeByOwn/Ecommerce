@@ -17,6 +17,7 @@ This is a Spring Boot-based backend for a multi-role e-commerce platform, built 
 The project is designed as an MVP (Minimum Viable Product) and covers core features like:
 
 ✅ User Management
+✅ Seller Management
 ✅ Product Catalog
 ✅ Order Processing
 ✅ Secure Payments (future)
